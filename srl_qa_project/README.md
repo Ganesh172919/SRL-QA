@@ -128,9 +128,14 @@ All configuration is centralized in `config.py`. Common knobs:
 
 ## Docs Index
 
-- `docs/OVERVIEW.md`: end-to-end architecture and “where to start”
+- `docs/OVERVIEW.md`: end-to-end architecture and "where to start"
 - `docs/DATA.md`: dataset generation, cached split format, JSON schema
 - `docs/MODEL.md`: PropQA-Net architecture, losses, decoding
 - `docs/EVALUATION.md`: metrics, plots, and error taxonomy
 - `docs/PDF_DELIVERABLES.md`: how PDFs and `implementation_code.py` are produced
 - `docs/TROUBLESHOOTING.md`: common environment and runtime issues
+- `docs/COMPLETE_PROJECT_GUIDE.md`: comprehensive end-to-end project handbook
+- `docs/DETAILED_ANALYSIS.md`: in-depth analysis of data, model, training, evaluation, errors, hybrid system, and benchmarks
+- `docs/DETAILED_INNOVATION.md`: detailed description of all innovations, novelty assessment, and future directions
+- `docs/DETAILED_SURVEY.md`: comprehensive literature survey covering SRL, QA, transformers, LLMs, and structured semantics
+- `docs/DETAILED_ARCHITECTURE.md`: complete system architecture with diagrams, data flows, component interactions, and extensibility points

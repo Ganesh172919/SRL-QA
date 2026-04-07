@@ -15,7 +15,6 @@ from config import ProjectConfig, get_config
 from data_loader import build_dataloaders, load_or_build_splits, run_data_statistics
 from evaluator import evaluate_model
 from hybrid_qa import HybridQASystem
-from pdf_generator import generate_all_pdfs
 from qa_inference import ask_question, run_demo, run_interactive_session
 from trainer import train_model
 

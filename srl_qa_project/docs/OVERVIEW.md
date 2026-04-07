@@ -57,6 +57,15 @@ PDF deliverables (pdf_generator.py)          -> outputs/*.pdf + outputs/implemen
 - Multi-task model: SRL BIO tagging and extractive QA share the same context encoder so the QA head is “grounded” in roles.
 - Deterministic splits: cached JSON splits are generated with a fixed random seed to make results reproducible.
 
+## Detailed Documentation
+
+This directory now includes comprehensive reference documents:
+
+- `DETAILED_ANALYSIS.md`: In-depth analysis of dataset, model, training, evaluation, errors, hybrid system, benchmarks, ablation, latency, confidence calibration, and limitations
+- `DETAILED_INNOVATION.md`: Detailed description of all 10 innovations, novelty assessment, impact, comparison with state of the art, and future directions
+- `DETAILED_SURVEY.md`: Comprehensive literature survey covering SRL foundations, classical and neural approaches, PropBank resources, QA evolution, transformer-based QA, QA-SRL, LLMs and structured semantics, benchmarks, explainability, reproducibility, and gap analysis
+- `DETAILED_ARCHITECTURE.md`: Complete system architecture with high-level diagrams, data pipeline, model architecture, training, evaluation, inference, hybrid QA, benchmark, Streamlit app, configuration, data flow diagrams, component interactions, deployment, and extensibility points
+
 ## Outputs Cheat Sheet
 
 - `data/*.json`: cached examples; delete or set `ProjectConfig.data.rebuild_cache=True` to regenerate
