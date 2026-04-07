@@ -1,0 +1,13 @@
+# Ignore NLTK data folders (local corpora/models)
+nltk_data/
+**/nltk_data/
+srl_qa_project/nltk_data/
+
+# Ignore Pylance / Pyright caches and VS Code Pylance files
+.pyright/
+.pyrightcache/
+.pylance/
+.vscode/ipch/
+.vscode/.pyright/
+.vscode/pylance/
+.vscode/*pylance*

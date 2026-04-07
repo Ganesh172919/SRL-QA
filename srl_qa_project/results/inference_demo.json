@@ -1,0 +1,102 @@
+[
+  {
+    "context": "The chef cooked a delicious meal in the kitchen yesterday.",
+    "question": "Who cooked?",
+    "predicted_answer": "The chef",
+    "confidence": 0.6827126160264015,
+    "predicted_role": "ARG0",
+    "correct_role": "ARG0",
+    "expected_answer": "The chef",
+    "match": "CORRECT"
+  },
+  {
+    "context": "She sent a letter to her friend last Monday.",
+    "question": "When did she send?",
+    "predicted_answer": "a letter to her friend last Monday",
+    "confidence": 0.46983727030456063,
+    "predicted_role": "ARG1",
+    "correct_role": "ARGM-TMP",
+    "expected_answer": "last Monday",
+    "match": "INCORRECT"
+  },
+  {
+    "context": "The company announced layoffs because of budget cuts.",
+    "question": "Why were layoffs announced?",
+    "predicted_answer": "budget cuts",
+    "confidence": 0.4491895530372858,
+    "predicted_role": "ARG1",
+    "correct_role": "ARGM-CAU",
+    "expected_answer": "because of budget cuts",
+    "match": "INCORRECT"
+  },
+  {
+    "context": "The nurse administered the medicine to the patient after dinner.",
+    "question": "What was administered?",
+    "predicted_answer": "the medicine",
+    "confidence": 0.5154216960072517,
+    "predicted_role": "ARG1",
+    "correct_role": "ARG1",
+    "expected_answer": "the medicine",
+    "match": "CORRECT"
+  },
+  {
+    "context": "The courier delivered the package to the office at noon.",
+    "question": "Where was the package delivered?",
+    "predicted_answer": "delivered the package to the office at noon",
+    "confidence": 0.41984088681638243,
+    "predicted_role": "ARG1",
+    "correct_role": "ARGM-LOC",
+    "expected_answer": "to the office",
+    "match": "INCORRECT"
+  },
+  {
+    "context": "The engineer repaired the machine carefully with a small screwdriver.",
+    "question": "How did the engineer repair the machine?",
+    "predicted_answer": "repaired the machine carefully with a small screwdriver",
+    "confidence": 0.46025775950402026,
+    "predicted_role": "ARG1",
+    "correct_role": "ARGM-MNR",
+    "expected_answer": "carefully",
+    "match": "INCORRECT"
+  },
+  {
+    "context": "The board approved the proposal during the morning meeting.",
+    "question": "What did the board approve?",
+    "predicted_answer": "the proposal during the morning",
+    "confidence": 0.30426431897794826,
+    "predicted_role": "ARG1",
+    "correct_role": "ARG1",
+    "expected_answer": "the proposal",
+    "match": "INCORRECT"
+  },
+  {
+    "context": "Maria gave the intern a notebook for the workshop.",
+    "question": "Who received a notebook?",
+    "predicted_answer": "notebook for the workshop",
+    "confidence": 0.34540823474526405,
+    "predicted_role": "ARG1",
+    "correct_role": "ARG2",
+    "expected_answer": "the intern",
+    "match": "INCORRECT"
+  },
+  {
+    "context": "Investigators examined the site after the explosion in the warehouse.",
+    "question": "Where was the explosion?",
+    "predicted_answer": "warehouse",
+    "confidence": 0.4941597627475858,
+    "predicted_role": "ARG1",
+    "correct_role": "ARGM-LOC",
+    "expected_answer": "in the warehouse",
+    "match": "INCORRECT"
+  },
+  {
+    "context": "The students presented their project enthusiastically at the science fair.",
+    "question": "How did the students present their project?",
+    "predicted_answer": "their project enthusiastically at the science fair",
+    "confidence": 0.46611740326043216,
+    "predicted_role": "ARG1",
+    "correct_role": "ARGM-MNR",
+    "expected_answer": "enthusiastically",
+    "match": "INCORRECT"
+  }
+]

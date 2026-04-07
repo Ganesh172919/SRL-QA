@@ -1,0 +1,162 @@
+[
+  {
+    "id": "challenge_001",
+    "context": "The chef cooked a delicious meal in the kitchen yesterday.",
+    "question": "Who cooked?",
+    "expected_answer": "The chef",
+    "target_role": "ARG0",
+    "question_type": "WHO"
+  },
+  {
+    "id": "challenge_002",
+    "context": "She sent a letter to her friend last Monday.",
+    "question": "When did she send?",
+    "expected_answer": "last Monday",
+    "target_role": "ARGM-TMP",
+    "question_type": "WHEN"
+  },
+  {
+    "id": "challenge_003",
+    "context": "The company announced layoffs because of budget cuts.",
+    "question": "Why were layoffs announced?",
+    "expected_answer": "because of budget cuts",
+    "target_role": "ARGM-CAU",
+    "question_type": "WHY"
+  },
+  {
+    "id": "challenge_004",
+    "context": "The nurse administered the medicine to the patient after dinner.",
+    "question": "What was administered?",
+    "expected_answer": "the medicine",
+    "target_role": "ARG1",
+    "question_type": "WHAT"
+  },
+  {
+    "id": "challenge_005",
+    "context": "The courier delivered the package to the office at noon.",
+    "question": "Where was the package delivered?",
+    "expected_answer": "to the office",
+    "target_role": "ARGM-LOC",
+    "question_type": "WHERE"
+  },
+  {
+    "id": "challenge_006",
+    "context": "The engineer repaired the machine carefully with a small screwdriver.",
+    "question": "How did the engineer repair the machine?",
+    "expected_answer": "carefully",
+    "target_role": "ARGM-MNR",
+    "question_type": "HOW"
+  },
+  {
+    "id": "challenge_007",
+    "context": "The board approved the proposal during the morning meeting.",
+    "question": "What did the board approve?",
+    "expected_answer": "the proposal",
+    "target_role": "ARG1",
+    "question_type": "WHAT"
+  },
+  {
+    "id": "challenge_008",
+    "context": "Maria gave the intern a notebook for the workshop.",
+    "question": "Who received a notebook?",
+    "expected_answer": "the intern",
+    "target_role": "ARG2",
+    "question_type": "TO-WHOM"
+  },
+  {
+    "id": "challenge_009",
+    "context": "Investigators examined the site after the explosion in the warehouse.",
+    "question": "Where was the explosion?",
+    "expected_answer": "in the warehouse",
+    "target_role": "ARGM-LOC",
+    "question_type": "WHERE"
+  },
+  {
+    "id": "challenge_010",
+    "context": "The students presented their project enthusiastically at the science fair.",
+    "question": "How did the students present their project?",
+    "expected_answer": "enthusiastically",
+    "target_role": "ARGM-MNR",
+    "question_type": "HOW"
+  },
+  {
+    "id": "challenge_011",
+    "context": "The analyst presented the report to the committee in May.",
+    "question": "To whom was the report presented?",
+    "expected_answer": "the committee",
+    "target_role": "ARG2",
+    "question_type": "TO-WHOM"
+  },
+  {
+    "id": "challenge_012",
+    "context": "The surgeon completed the operation in three hours.",
+    "question": "How long did the operation take?",
+    "expected_answer": "in three hours",
+    "target_role": "ARGM-TMP",
+    "question_type": "WHEN"
+  },
+  {
+    "id": "challenge_013",
+    "context": "The teacher handed the certificate to Rahul after class.",
+    "question": "Who received the certificate?",
+    "expected_answer": "Rahul",
+    "target_role": "ARG2",
+    "question_type": "TO-WHOM"
+  },
+  {
+    "id": "challenge_014",
+    "context": "The storm damaged several houses near the river overnight.",
+    "question": "What was damaged?",
+    "expected_answer": "several houses",
+    "target_role": "ARG1",
+    "question_type": "WHAT"
+  },
+  {
+    "id": "challenge_015",
+    "context": "The startup secured funding from two investors in Singapore.",
+    "question": "Where did the startup secure funding?",
+    "expected_answer": "in Singapore",
+    "target_role": "ARGM-LOC",
+    "question_type": "WHERE"
+  },
+  {
+    "id": "challenge_016",
+    "context": "The director postponed the launch because the tests were incomplete.",
+    "question": "Why was the launch postponed?",
+    "expected_answer": "because the tests were incomplete",
+    "target_role": "ARGM-CAU",
+    "question_type": "WHY"
+  },
+  {
+    "id": "challenge_017",
+    "context": "The volunteer distributed blankets to families at the shelter.",
+    "question": "Who received blankets?",
+    "expected_answer": "families",
+    "target_role": "ARG2",
+    "question_type": "TO-WHOM"
+  },
+  {
+    "id": "challenge_018",
+    "context": "The scientist explained the process with remarkable clarity.",
+    "question": "How did the scientist explain the process?",
+    "expected_answer": "with remarkable clarity",
+    "target_role": "ARGM-MNR",
+    "question_type": "HOW"
+  },
+  {
+    "id": "challenge_019",
+    "context": "The mayor signed the agreement in the council chamber on Tuesday.",
+    "question": "When did the mayor sign the agreement?",
+    "expected_answer": "on Tuesday",
+    "target_role": "ARGM-TMP",
+    "question_type": "WHEN"
+  },
+  {
+    "id": "challenge_020",
+    "context": "The librarian guided the visitors through the archive quietly.",
+    "question": "Where did the librarian guide the visitors?",
+    "expected_answer": "through the archive",
+    "target_role": "ARGM-LOC",
+    "question_type": "WHERE"
+  }
+]
