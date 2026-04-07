@@ -1,0 +1,25 @@
+{
+  "created_on": "2026-04-07",
+  "package": "srlqa",
+  "source_project": "srl_qa_project",
+  "baseline_metrics": {
+    "qa_exact_match": 0.5184004636337294,
+    "qa_token_f1": 0.7611748434629519,
+    "srl_micro_f1": 0.7133258791413577,
+    "srl_macro_f1": 0.1618963366772707,
+    "qa_pair_count": 23007,
+    "usable_propbank_instances_live_stats": 9353
+  },
+  "frozen_sources": {
+    "test_split": "srl_qa_project/data/test.json",
+    "validation_split": "srl_qa_project/data/val.json",
+    "current_challenge_suite": "srl_qa_project/data/challenge_suite.json",
+    "new_seed_challenge_suite": "srlqa/data/challenge_suite_v2.json",
+    "metrics": "srl_qa_project/results/metrics.json",
+    "statistics": "srl_qa_project/results/data_statistics.json"
+  },
+  "claim_policy": {
+    "local_95_token_f1": "May be claimed only after this package evaluates a frozen suite and writes reproducible records.",
+    "official_sota": "Must not be claimed without public benchmark scorer validation."
+  }
+}

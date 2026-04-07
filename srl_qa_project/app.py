@@ -5,6 +5,7 @@ from __future__ import annotations
 import html
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -17,6 +18,18 @@ from hybrid_qa import HybridQASystem, load_challenge_suite
 
 CONFIG = get_config()
 PROJECT_ROOT = CONFIG.paths.project_root
+WORKSPACE_ROOT = PROJECT_ROOT.parent
+NEW_SRLQA_ROOT = WORKSPACE_ROOT / "srlqa"
+if NEW_SRLQA_ROOT.exists() and str(NEW_SRLQA_ROOT) not in sys.path:
+    sys.path.insert(0, str(NEW_SRLQA_ROOT))
+
+try:
+    from srlqa.model_hub import ModelHub, model_choices, model_labels
+except Exception:  # pragma: no cover - optional new package may be absent
+    ModelHub = None
+    model_choices = None
+    model_labels = None
+
 LITERATURE_REFERENCES = [
     {
         "title": "Large-Scale QA-SRL Parsing",
@@ -89,6 +102,15 @@ def get_hybrid_system() -> HybridQASystem:
     """Cache the hybrid system so the app stays responsive."""
 
     return HybridQASystem(CONFIG, use_transformer_qa=True, use_sentence_embeddings=True)
+
+
+@st.cache_resource(show_spinner=False)
+def get_all_model_hub() -> Any:
+    """Cache the all-model hub from the new RAISE-SRL-QA package."""
+
+    if ModelHub is None:
+        return None
+    return ModelHub()
 
 
 def highlight_answer(context: str, answer: str) -> str:
@@ -205,6 +227,79 @@ def render_ask_section(challenge_suite: List[Dict[str, Any]]) -> None:
             render_table(evidence_df)
         else:
             st.info("No evidence spans were returned for this query.")
+
+
+def render_all_model_qa_section(challenge_suite: List[Dict[str, Any]]) -> None:
+    """Render model selection and all-model comparison."""
+
+    st.title("All Model QA")
+    st.caption("Run the legacy PropQA-Net baseline, legacy hybrid, RAISE fast, and RAISE model-backed pipelines from one screen.")
+    if ModelHub is None or model_choices is None or model_labels is None:
+        st.error("The new `srlqa` package was not found. Create/run the top-level `srlqa/` folder first.")
+        return
+
+    labels = ["Custom question"] + [f"{index + 1}. {item['question']}" for index, item in enumerate(challenge_suite)]
+    selected_label = st.selectbox("Sample Questions", labels, key="all_model_sample")
+    selected_example = None
+    if selected_label != "Custom question":
+        selected_index = labels.index(selected_label) - 1
+        selected_example = challenge_suite[selected_index]
+
+    default_context = selected_example["context"] if selected_example else "The courier delivered the package to the office at noon."
+    default_question = selected_example["question"] if selected_example else "Where was the package delivered?"
+    default_expected = selected_example.get("expected_answer", "") if selected_example else "to the office"
+
+    context = st.text_area("Context", value=default_context, height=170, key="all_model_context")
+    question = st.text_input("Question", value=default_question, key="all_model_question")
+    expected_answer = st.text_input("Expected answer for recursive correction/evaluation (optional)", value=default_expected, key="all_model_expected")
+
+    labels_by_key = model_labels(include_all=True)
+    choice_keys = model_choices(include_all=True)
+    selected_model_label = st.selectbox(
+        "Model",
+        [labels_by_key[key] for key in choice_keys],
+        index=0,
+        help="Choose All Models to compare every available system.",
+    )
+    selected_model = next(key for key in choice_keys if labels_by_key[key] == selected_model_label)
+
+    if st.button("Run Selected Model(s)", type="primary"):
+        hub = get_all_model_hub()
+        if hub is None:
+            st.error("Model hub unavailable.")
+            return
+        with st.spinner("Running model(s)... first run can download/load local weights."):
+            results = hub.run(
+                selected_model,
+                context,
+                question,
+                expected_answer=expected_answer.strip() or None,
+            )
+
+        rows = []
+        for result in results:
+            rows.append(
+                {
+                    "model": result["model_label"],
+                    "ok": result["ok"],
+                    "answer": result["answer"],
+                    "role": result["role"],
+                    "confidence": round(float(result["confidence"]), 4),
+                    "latency_ms": round(float(result["latency_ms"]), 1),
+                    "error": result["error"],
+                    "reasoning": result["reasoning"],
+                }
+            )
+        render_table(pd.DataFrame(rows))
+
+        st.markdown("**Context With Best Highlight**")
+        best = max(results, key=lambda item: float(item["confidence"]) if item["ok"] else -1.0)
+        st.markdown(
+            f"<div style='padding:0.8rem;border:1px solid #d6d6d6;border-radius:0.5rem;background:#fafafa'>{highlight_answer(context, str(best.get('answer', '')))}</div>",
+            unsafe_allow_html=True,
+        )
+        with st.expander("Raw model outputs"):
+            st.json(results)
 
 
 def render_architecture_section(plots_dir: Path) -> None:
@@ -506,6 +601,7 @@ def main() -> None:
     section = st.sidebar.radio(
         "Navigate",
         [
+            "All Model QA",
             "Ask the Model",
             "Architecture",
             "Dataset & PropBank Explorer",
@@ -516,7 +612,9 @@ def main() -> None:
         ],
     )
 
-    if section == "Ask the Model":
+    if section == "All Model QA":
+        render_all_model_qa_section(challenge_suite)
+    elif section == "Ask the Model":
         render_ask_section(challenge_suite)
     elif section == "Architecture":
         render_architecture_section(CONFIG.paths.plots_dir)

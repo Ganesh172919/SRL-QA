@@ -1,0 +1,137 @@
+[
+  {
+    "id": "challenge_v2_001",
+    "context": "The company hired Rahul after the interview.",
+    "question": "Who hired Rahul?",
+    "expected_answer": "The company",
+    "target_role": "ARG0",
+    "question_type": "WHO",
+    "diagnostic": "agency_minimal_pair"
+  },
+  {
+    "id": "challenge_v2_002",
+    "context": "Rahul hired the company after the interview.",
+    "question": "Who hired the company?",
+    "expected_answer": "Rahul",
+    "target_role": "ARG0",
+    "question_type": "WHO",
+    "diagnostic": "agency_minimal_pair"
+  },
+  {
+    "id": "challenge_v2_003",
+    "context": "The courier delivered the package to the office at noon.",
+    "question": "Where was the package delivered?",
+    "expected_answer": "to the office",
+    "target_role": "ARGM-LOC",
+    "question_type": "WHERE",
+    "diagnostic": "location_time_boundary"
+  },
+  {
+    "id": "challenge_v2_004",
+    "context": "The courier delivered the package to the office at noon.",
+    "question": "When was the package delivered?",
+    "expected_answer": "at noon",
+    "target_role": "ARGM-TMP",
+    "question_type": "WHEN",
+    "diagnostic": "location_time_boundary"
+  },
+  {
+    "id": "challenge_v2_005",
+    "context": "The board approved the proposal because investors demanded a decision.",
+    "question": "Why did the board approve the proposal?",
+    "expected_answer": "because investors demanded a decision",
+    "target_role": "ARGM-CAU",
+    "question_type": "WHY",
+    "diagnostic": "causal_boundary"
+  },
+  {
+    "id": "challenge_v2_006",
+    "context": "Maria gave the intern a notebook for the workshop.",
+    "question": "Who received a notebook?",
+    "expected_answer": "the intern",
+    "target_role": "ARG2",
+    "question_type": "TO-WHOM",
+    "diagnostic": "transfer_arg2"
+  },
+  {
+    "id": "challenge_v2_007",
+    "context": "The engineer repaired the machine carefully with a small screwdriver.",
+    "question": "How did the engineer repair the machine?",
+    "expected_answer": "carefully",
+    "target_role": "ARGM-MNR",
+    "question_type": "HOW",
+    "diagnostic": "manner_instrument_boundary"
+  },
+  {
+    "id": "challenge_v2_008",
+    "context": "The engineer repaired the machine carefully with a small screwdriver.",
+    "question": "What did the engineer repair?",
+    "expected_answer": "the machine",
+    "target_role": "ARG1",
+    "question_type": "WHAT",
+    "diagnostic": "patient_boundary"
+  },
+  {
+    "id": "challenge_v2_009",
+    "context": "The meeting ended before lunch in the conference room.",
+    "question": "When did the meeting end?",
+    "expected_answer": "before lunch",
+    "target_role": "ARGM-TMP",
+    "question_type": "WHEN",
+    "diagnostic": "time_location_boundary"
+  },
+  {
+    "id": "challenge_v2_010",
+    "context": "The meeting ended before lunch in the conference room.",
+    "question": "Where did the meeting end?",
+    "expected_answer": "in the conference room",
+    "target_role": "ARGM-LOC",
+    "question_type": "WHERE",
+    "diagnostic": "time_location_boundary"
+  },
+  {
+    "id": "challenge_v2_011",
+    "context": "The nurse administered the medicine to the patient after dinner.",
+    "question": "What was administered?",
+    "expected_answer": "the medicine",
+    "target_role": "ARG1",
+    "question_type": "WHAT",
+    "diagnostic": "medical_transfer"
+  },
+  {
+    "id": "challenge_v2_012",
+    "context": "The nurse administered the medicine to the patient after dinner.",
+    "question": "Who received the medicine?",
+    "expected_answer": "the patient",
+    "target_role": "ARG2",
+    "question_type": "TO-WHOM",
+    "diagnostic": "medical_transfer"
+  },
+  {
+    "id": "challenge_v2_013",
+    "context": "Investigators examined the site after the explosion in the warehouse.",
+    "question": "Where was the explosion?",
+    "expected_answer": "in the warehouse",
+    "target_role": "ARGM-LOC",
+    "question_type": "WHERE",
+    "diagnostic": "nominal_event_location"
+  },
+  {
+    "id": "challenge_v2_014",
+    "context": "The students presented their project enthusiastically at the science fair.",
+    "question": "How did the students present their project?",
+    "expected_answer": "enthusiastically",
+    "target_role": "ARGM-MNR",
+    "question_type": "HOW",
+    "diagnostic": "manner_location_boundary"
+  },
+  {
+    "id": "challenge_v2_015",
+    "context": "The students presented their project enthusiastically at the science fair.",
+    "question": "Where did the students present their project?",
+    "expected_answer": "at the science fair",
+    "target_role": "ARGM-LOC",
+    "question_type": "WHERE",
+    "diagnostic": "manner_location_boundary"
+  }
+]
