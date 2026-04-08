@@ -1,0 +1,18 @@
+{
+  "dataset_rows_loaded": 123099,
+  "docs": {
+    "architecture": "C:\\Users\\RAVIPRAKASH\\Downloads\\NLP Project\\srlqa\\output\\docs\\ARCHITECTURE_DIAGRAMS.md",
+    "manifest": "C:\\Users\\RAVIPRAKASH\\Downloads\\NLP Project\\srlqa\\output\\docs\\SOURCE_ARTIFACT_MANIFEST.md",
+    "report": "C:\\Users\\RAVIPRAKASH\\Downloads\\NLP Project\\srlqa\\output\\docs\\COMPLETE_ANALYSIS_REPORT.md",
+    "reproducibility": "C:\\Users\\RAVIPRAKASH\\Downloads\\NLP Project\\srlqa\\output\\docs\\REPRODUCIBILITY.md"
+  },
+  "evaluation_records": 60,
+  "generated_at": "2026-04-07T22:27:01",
+  "plot_count": 36,
+  "ppt": "C:\\Users\\RAVIPRAKASH\\Downloads\\NLP Project\\srlqa\\output\\ppt\\RAISE_SRLQA_COMPLETE_ANALYSIS_39_SLIDES.pptx",
+  "project_root": "C:\\Users\\RAVIPRAKASH\\Downloads\\NLP Project\\srlqa",
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "runtime_seconds": 121.26335570000083,
+  "skip_slow_models": false,
+  "source_inventory_file_count": 240
+}

@@ -42,6 +42,45 @@ Single question with the PyTorch QA model plus SRL correction:
 python -m srlqa.main ask --context "The courier delivered the package to the office at noon." --question "Where was the package delivered?"
 ```
 
+## Huge Visual PPT
+
+For the largest presentation deck with diagrams, plots, graphs, tables,
+innovation architectures, and experiment comparisons, open:
+
+```text
+RAISE_SRLQA_HUGE_VISUAL_DECK.pptx
+```
+
+The slide index is:
+
+```text
+RAISE_SRLQA_HUGE_VISUAL_DECK_INDEX.md
+```
+
+The generated plot images are in:
+
+```text
+results/visual_assets/
+```
+
+The requested project-level plots folder is:
+
+```text
+plots/
+```
+
+The PPT built from the `plots/` folder is:
+
+```text
+RAISE_SRLQA_PLOTS_FULL_PRESENTATION.pptx
+```
+
+The plots index is:
+
+```text
+plots/PLOTS_INDEX.md
+```
+
 For a scored correction demo where the gold answer is known:
 
 ```powershell

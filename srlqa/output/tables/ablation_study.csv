@@ -1,0 +1,5 @@
+variant,innovation_or_model_change,dataset_scope,accuracy,token_f1,role_accuracy,delta_f1_vs_previous_available_variant,delta_f1_vs_legacy_baseline
+legacy_baseline,Legacy checkpoint baseline,challenge_suite_v2 seed suite,0.2,0.5522222222222222,0.3333333333333333,,0.0
+legacy_hybrid,Legacy hybrid additions,challenge_suite_v2 seed suite,0.6666666666666666,0.822962962962963,0.9333333333333333,0.27074074074074084,0.27074074074074084
+raise_srlqa_fast,RAISE retrieval + verifier + deterministic rules,challenge_suite_v2 seed suite,1.0,1.0,1.0,0.177037037037037,0.44777777777777783
+raise_srlqa_model,RAISE plus transformer QA candidates,challenge_suite_v2 seed suite,1.0,1.0,1.0,0.0,0.44777777777777783

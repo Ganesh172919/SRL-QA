@@ -1,0 +1,16 @@
+innovation_or_experiment,status,suite,exact_match,token_f1,role_accuracy_or_srl_f1,evidence_source
+Legacy PropQA-Net saved baseline,completed,local saved split,0.5184004636337294,0.7611748434629519,0.7133258791413577,srl_qa_project/results/metrics.json
+Classical baseline legacy benchmark,completed,20 challenge + 40 test subset,0.08333333333333333,0.362435693288417,0.2833333333333333,benchmark_results.json
+Heuristic reranker legacy benchmark,completed,20 challenge + 40 test subset,0.3333333333333333,0.5383276389745968,0.7333333333333333,benchmark_results.json
+Transformer QA assist legacy benchmark,completed,20 challenge + 40 test subset,0.3333333333333333,0.5383276389745968,0.7333333333333333,benchmark_results.json
+Full hybrid legacy benchmark,completed,20 challenge + 40 test subset,0.3333333333333333,0.5383276389745968,0.7333333333333333,benchmark_results.json
+RAISE fast seed suite,completed local seed suite,15 handcrafted challenge_v2 examples,1.0,1.0,1.0,computed by this script
+RAISE model-backed courier smoke test,single-example smoke test,courier delivery example,1.0,1.0,1.0,computed by this script
+PropBank retrieval,"implemented, not independently accuracy-scored",local frame store,,,,4659 frame records
+Constrained span decoding,implemented inside RAISE fast,covered by seed suite,1.0,1.0,1.0,"computed seed suite, not isolated ablation"
+Verifier and recursive correction,implemented inside RAISE fast,covered by seed suite,1.0,1.0,1.0,"computed seed suite, not isolated ablation"
+Hard negative mining,scaffolded,not evaluated,,,,srlqa/training/hard_negative_mining.py
+Teacher-student distillation,scaffolded,not evaluated,,,,srlqa/distillation/*.py
+Nominal QA extension,scaffolded,not evaluated,,,,srlqa/nominal/*.py
+Proto-role auxiliary reasoning,scaffolded,not evaluated,,,,srlqa/proto_roles/*.py
+Calibration and weighted ensemble,scaffolded,not evaluated,,,,srlqa/evaluation/calibration.py and srlqa/ensemble/*.py

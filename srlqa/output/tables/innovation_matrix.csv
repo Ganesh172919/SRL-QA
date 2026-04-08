@@ -1,0 +1,11 @@
+innovation,evidence_file,file_exists,file_size_bytes,seed_suite_fast_f1_context,seed_suite_model_f1_context,controlled_ablation_log_found
+PropBank frame retrieval,srlqa/retrieval/propbank_index.py,True,4018,1.0,1.0,False
+Constrained span decoding,srlqa/decoding/span_rules.py,True,2508,1.0,1.0,False
+Role priors,srlqa/decoding/role_priors.py,True,517,1.0,1.0,False
+Evidence span verifier,srlqa/verification/span_verifier.py,True,2231,1.0,1.0,False
+Self-correction loop,srlqa/verification/self_correction.py,True,1053,1.0,1.0,False
+Hard negative mining,srlqa/training/hard_negative_mining.py,True,1875,1.0,1.0,False
+Distillation scaffolding,srlqa/distillation/teacher_runner.py,True,932,1.0,1.0,False
+Calibrated ensemble,srlqa/ensemble/weighted_voter.py,True,1218,1.0,1.0,False
+Nominal event templates,srlqa/nominal/qa_noun_templates.py,True,540,1.0,1.0,False
+Proto-role features,srlqa/proto_roles/proto_role_features.py,True,639,1.0,1.0,False

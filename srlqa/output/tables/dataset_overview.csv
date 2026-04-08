@@ -1,0 +1,13 @@
+dataset_name,split,rows,columns,file,size_bytes,builder,version
+propbank_srl_seq2seq,train,37057,2,.hf_cache\datasets\cu-kairos___propbank_srl_seq2seq\default\0.0.0\3ac8d9eb632afdfba5c70c95c0333d70c8bdca8f\propbank_srl_seq2seq-train.arrow,6625464,csv,0.0.0
+propbank_srl_seq2seq,validation,9264,2,.hf_cache\datasets\cu-kairos___propbank_srl_seq2seq\default\0.0.0\3ac8d9eb632afdfba5c70c95c0333d70c8bdca8f\propbank_srl_seq2seq-validation.arrow,1666840,csv,0.0.0
+task1519_qa_srl_question_generation,test,35,3,.hf_cache\datasets\Lots-of-LoRAs___task1519_qa_srl_question_generation\default\0.0.0\f67ab4599f48d1b82c492e49c814d7e558b081b1\task1519_qa_srl_question_generation-test.arrow,76888,parquet,0.0.0
+task1519_qa_srl_question_generation,train,274,3,.hf_cache\datasets\Lots-of-LoRAs___task1519_qa_srl_question_generation\default\0.0.0\f67ab4599f48d1b82c492e49c814d7e558b081b1\task1519_qa_srl_question_generation-train.arrow,598880,parquet,0.0.0
+task1519_qa_srl_question_generation,valid,34,3,.hf_cache\datasets\Lots-of-LoRAs___task1519_qa_srl_question_generation\default\0.0.0\f67ab4599f48d1b82c492e49c814d7e558b081b1\task1519_qa_srl_question_generation-valid.arrow,75120,parquet,0.0.0
+task1520_qa_srl_answer_generation,test,84,3,.hf_cache\datasets\Lots-of-LoRAs___task1520_qa_srl_answer_generation\default\0.0.0\8d76d2ee87589a38a55046ddda7ec51e6b089e05\task1520_qa_srl_answer_generation-test.arrow,161208,parquet,0.0.0
+task1520_qa_srl_answer_generation,train,667,3,.hf_cache\datasets\Lots-of-LoRAs___task1520_qa_srl_answer_generation\default\0.0.0\8d76d2ee87589a38a55046ddda7ec51e6b089e05\task1520_qa_srl_answer_generation-train.arrow,1278968,parquet,0.0.0
+task1520_qa_srl_answer_generation,valid,83,3,.hf_cache\datasets\Lots-of-LoRAs___task1520_qa_srl_answer_generation\default\0.0.0\8d76d2ee87589a38a55046ddda7ec51e6b089e05\task1520_qa_srl_answer_generation-valid.arrow,160240,parquet,0.0.0
+qa_srl_promptsource,test,15407,10,.hf_cache\datasets\marcov___qa_srl_promptsource\default\0.0.0\46fcd4605989a6144719de0cb7be35bff6efe343\qa_srl_promptsource-test.arrow,12214976,parquet,0.0.0
+qa_srl_promptsource,train,44898,10,.hf_cache\datasets\marcov___qa_srl_promptsource\default\0.0.0\46fcd4605989a6144719de0cb7be35bff6efe343\qa_srl_promptsource-train.arrow,35255688,parquet,0.0.0
+qa_srl_promptsource,validation,15281,10,.hf_cache\datasets\marcov___qa_srl_promptsource\default\0.0.0\46fcd4605989a6144719de0cb7be35bff6efe343\qa_srl_promptsource-validation.arrow,12115776,parquet,0.0.0
+challenge_suite_v2,seed,15,7,data\challenge_suite_v2.json,4638,json,

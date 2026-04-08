@@ -1,0 +1,16 @@
+metric,value,source,scope
+qa_exact_match,0.5184004636337294,linked baseline metrics.json,baseline test
+qa_token_f1,0.7611748434629519,linked baseline metrics.json,baseline test
+srl_micro_precision,0.7320487108979262,linked baseline metrics.json,baseline test
+srl_micro_recall,0.6955368718815071,linked baseline metrics.json,baseline test
+srl_micro_f1,0.7133258791413577,linked baseline metrics.json,baseline test
+srl_macro_f1,0.1618963366772707,linked baseline metrics.json,baseline test
+srl_bio_accuracy,0.816269227638968,linked baseline metrics.json,baseline test
+best_epoch,6.0,linked baseline metrics.json,baseline training
+best_validation_f1,0.7726556386006902,linked baseline metrics.json,baseline training
+parameter_count,1784352.0,linked baseline metrics.json,baseline training
+total_propbank_instances,112917.0,linked baseline data_statistics.json,baseline corpus
+usable_propbank_instances,9073.0,linked baseline data_statistics.json,baseline corpus
+qa_pair_count,23007.0,linked baseline data_statistics.json,baseline corpus
+unique_predicates,1340.0,linked baseline data_statistics.json,baseline corpus
+unique_rolesets,1670.0,linked baseline data_statistics.json,baseline corpus

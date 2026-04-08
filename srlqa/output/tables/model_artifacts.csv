@@ -1,0 +1,20 @@
+artifact,kind,size_bytes,size_mb,parameter_count,tensor_count,model_key,latency_ms_mean,latency_ms_median,latency_ms_p95
+.hf_cache\models\models--deepset--deberta-v3-base-squad2\refs\main,file,40.0,3.814697265625e-05,,,,,,
+.hf_cache\models\models--deepset--deberta-v3-base-squad2\snapshots\eea39c60cc305c2e4a9504f5ff117294bebb42db\added_tokens.json,json,23.0,2.193450927734375e-05,,,,,,
+.hf_cache\models\models--deepset--deberta-v3-base-squad2\snapshots\eea39c60cc305c2e4a9504f5ff117294bebb42db\config.json,json,992.0,0.000946044921875,,,,,,
+.hf_cache\models\models--deepset--deberta-v3-base-squad2\snapshots\eea39c60cc305c2e4a9504f5ff117294bebb42db\model.safetensors,safetensors,735360940.0,701.2948417663574,183833602.0,201.0,,,,
+.hf_cache\models\models--deepset--deberta-v3-base-squad2\snapshots\eea39c60cc305c2e4a9504f5ff117294bebb42db\special_tokens_map.json,json,173.0,0.00016498565673828125,,,,,,
+.hf_cache\models\models--deepset--deberta-v3-base-squad2\snapshots\eea39c60cc305c2e4a9504f5ff117294bebb42db\spm.model,model,2464616.0,2.3504409790039062,,,,,,
+.hf_cache\models\models--deepset--deberta-v3-base-squad2\snapshots\eea39c60cc305c2e4a9504f5ff117294bebb42db\tokenizer.json,json,8648791.0,8.248129844665527,,,,,,
+.hf_cache\models\models--deepset--deberta-v3-base-squad2\snapshots\eea39c60cc305c2e4a9504f5ff117294bebb42db\tokenizer_config.json,json,379.0,0.00036144256591796875,,,,,,
+.hf_cache\models\models--microsoft--deberta-v3-base\refs\main,file,40.0,3.814697265625e-05,,,,,,
+.hf_cache\models\models--microsoft--deberta-v3-base\refs\refs\pr\14,file,40.0,3.814697265625e-05,,,,,,
+.hf_cache\models\models--microsoft--deberta-v3-base\snapshots\8ccc9b6f36199bec6961081d44eb72fb3f7353f3\config.json,json,579.0,0.0005521774291992188,,,,,,
+.hf_cache\models\models--microsoft--deberta-v3-base\snapshots\8ccc9b6f36199bec6961081d44eb72fb3f7353f3\pytorch_model.bin,bin,371146213.0,353.95261096954346,,,,,,
+.hf_cache\models\models--microsoft--deberta-v3-base\snapshots\8ccc9b6f36199bec6961081d44eb72fb3f7353f3\spm.model,model,2464616.0,2.3504409790039062,,,,,,
+.hf_cache\models\models--microsoft--deberta-v3-base\snapshots\8ccc9b6f36199bec6961081d44eb72fb3f7353f3\tokenizer_config.json,json,52.0,4.9591064453125e-05,,,,,,
+.hf_cache\models\models--microsoft--deberta-v3-base\snapshots\de19fe7db5162df5f3d8f0b41321c0267288fd74\model.safetensors,safetensors,371101258.0,353.9097385406494,185537893.0,210.0,,,,
+measured runtime variant,runtime,,,,,legacy_baseline,207.5449600003291,160.79479999825708,397.3874600018455
+measured runtime variant,runtime,,,,,legacy_hybrid,495.86884000042727,402.3419000004651,1005.4954800023547
+measured runtime variant,runtime,,,,,raise_srlqa_fast,7.081493333438023,2.0871000015176833,26.782000001548948
+measured runtime variant,runtime,,,,,raise_srlqa_model,1294.6329533333483,362.54360000020824,5053.015310000397

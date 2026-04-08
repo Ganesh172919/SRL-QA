@@ -1,0 +1,6 @@
+error_category,count
+correct,1789
+span boundary error,866
+other,109
+wrong role,685
+predicate miss,2
