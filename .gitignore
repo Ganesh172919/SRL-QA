@@ -11,3 +11,31 @@ srl_qa_project/nltk_data/
 .vscode/.pyright/
 .vscode/pylance/
 .vscode/*pylance*
+
+# Ignore large processed training JSONL files
+/finetuning/data/processed/train_grouped.jsonl
+/finetuning/data/processed/train_grouped_v2.jsonl
+/finetuning/data/processed/train_grouped_v3.jsonl
+/finetuning/data/processed/train_grouped_v4.jsonl
+# Also ignore any future JSONL files in the processed folder
+/finetuning/data/processed/*.jsonl
+
+/finetuning/data
+
+# Ignore generated model and evaluation artifacts
+/finetuning/artifacts/
+/finetuning/results/
+
+# Ignore local runtime outputs
+/finetuning/__pycache__/
+/finetuning/src/**/__pycache__/
+/finetuning/presentation/__pycache__/
+/finetuning/*stdout.log
+/finetuning/*stderr.log
+
+# Ignore generated finetuning presentation outputs
+/finetuning/presentation/assets/
+/finetuning/presentation/pdfs/
+/finetuning/presentation/deck/
+/finetuning/presentation/sections/
+/finetuning/presentation/MASTER_PROJECT_PRESENTATION.md
