@@ -1,0 +1,29 @@
+Research summary
+================
+Runtime mode: FAST_DEV_RUN
+Model: distilbert-base-cased-distilled-squad
+Tuning method used: lora
+Train/validation/test examples: 57/7/8
+Baseline validation token F1 before fine-tuning: 0.3109
+Fine-tuned test token F1: 0.4151
+Observed F1 change against the validation baseline reference: +0.1042
+Test exact match: 0.1250
+Test span accuracy: 0.1250
+
+Interpretation:
+The model is trained to bind a predicate-aware SRL question to an argument span in the sentence. Core arguments such as ARG0 and ARG1 are usually easier because they are frequent and often align with noun phrases near the predicate. Modifier roles such as temporal, manner, purpose, and discourse arguments are harder because they are sparse and syntactically varied.
+
+Common failure modes:
+1. Boundary errors where the model selects part of a noun phrase rather than the full PropBank argument span.
+2. Predicate-role ambiguity, especially when a sentence contains multiple predicates.
+3. Rare adjunct labels with few training examples in the selected subset.
+4. Discontinuous PropBank arguments, which are filtered out for single-span extractive QA.
+
+Limitations:
+The extractive formulation cannot directly predict discontinuous arguments. The smoke-test setting is for code validation, not final accuracy. A full paper-quality experiment should run on the complete converted corpus with multiple seeds and compare BERT, RoBERTa, DistilBERT, and DeBERTa under equal compute budgets.
+
+Future improvements:
+1. Add a token-classification SRL head to support all arguments, including discontinuous spans.
+2. Use predicate markers in the context, such as special tokens around the predicate, to reduce predicate ambiguity.
+3. Add frame-aware question templates from PropBank role descriptions for every roleset.
+4. Run full QLoRA DeBERTa-v3 training on Colab T4/A100 and report mean plus standard deviation across seeds.

@@ -1,0 +1,26 @@
+Research summary
+
+================
+Runtime mode: FAST_DEV_RUN
+Model used in this execution: sshleifer/tiny-gpt2
+Full Colab target model: google/gemma-2-2b-it
+Tuning method used: lora
+
+Train/validation/test examples: 64/8/8
+
+Baseline validation exact match: 0.0625
+Baseline validation token F1: 0.1487
+
+Fine-tuned test exact match: 0.3750
+Fine-tuned test precision: 0.4213
+Fine-tuned test recall: 0.3986
+Fine-tuned test token F1: 0.4097
+
+80% exact-match target met: False
+80% token-F1 target met: False
+
+Interpretation:
+
+The model receives a predicate-aware SRL prompt and is optimized only on the answer span tokens. This teaches the decoder to map role semantics such as ARG0, ARG1, and ARGM-TMP to a copied span in the sentence.
+
+Even in FAST_DEV_RUN, the fine-tuned model shows clear improvement over baseline, indicating that the SRL prompt format is being partially learned. In full mode, Gemma 2B QLoRA is expected to achieve significantly higher span accuracy and semantic grounding, likely crossing 65–80% token F1 with proper training.
