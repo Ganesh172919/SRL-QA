@@ -1,0 +1,144 @@
+{
+  "project": {
+    "title": "QA-SRL Fine-Tuning Presentation Package",
+    "subtitle": "Survey, Implementation, Results, Innovation, and Prompt Tuning for CPU-First QA-SRL",
+    "audience": "academic-viva",
+    "source_scope": "finetuning-only"
+  },
+  "claim_policy": {
+    "style": "maximum-impact-framing-with-local-evidence-guardrails",
+    "direct_numeric_sources": [
+      "results/evaluation_report.json",
+      "results/training_summary.json"
+    ],
+    "field_context_source": "docs/analysis.md",
+    "no_intro_section": true
+  },
+  "outputs": {
+    "master_markdown": "MASTER_PROJECT_PRESENTATION.md",
+    "master_pdf": "pdfs/MASTER_PROJECT_PRESENTATION.pdf",
+    "assets_dir": "assets",
+    "pdfs_dir": "pdfs",
+    "deck_dir": "deck",
+    "sections_dir": "sections",
+    "slide_deck_pptx": "deck/QA_SRL_Finetuning_Academic_Viva_30_Slides.pptx",
+    "slide_deck_pdf": "deck/QA_SRL_Finetuning_Academic_Viva_30_Slides.pdf"
+  },
+  "sections": [
+    {
+      "id": "survey",
+      "title": "Survey",
+      "section_markdown": "sections/01_survey.md",
+      "section_pdf": "pdfs/01_survey.pdf",
+      "slide_range": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "implementation",
+      "title": "Implementation",
+      "section_markdown": "sections/02_implementation.md",
+      "section_pdf": "pdfs/02_implementation.pdf",
+      "slide_range": [
+        9,
+        18
+      ]
+    },
+    {
+      "id": "results_analysis",
+      "title": "Results & Analysis",
+      "section_markdown": "sections/03_results_analysis.md",
+      "section_pdf": "pdfs/03_results_analysis.pdf",
+      "slide_range": [
+        19,
+        25
+      ]
+    },
+    {
+      "id": "innovation",
+      "title": "Innovation",
+      "section_markdown": "sections/04_innovation.md",
+      "section_pdf": "pdfs/04_innovation.pdf",
+      "slide_range": [
+        26,
+        27
+      ]
+    },
+    {
+      "id": "prompt_tuning",
+      "title": "Prompt Tuning",
+      "section_markdown": "sections/05_prompt_tuning.md",
+      "section_pdf": "pdfs/05_prompt_tuning.pdf",
+      "slide_range": [
+        28,
+        29
+      ]
+    },
+    {
+      "id": "final_takeaways",
+      "title": "Final Takeaways",
+      "section_markdown": "sections/06_final_takeaways.md",
+      "section_pdf": "pdfs/06_final_takeaways.pdf",
+      "slide_range": [
+        30,
+        30
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "id": "training_curve",
+      "filename": "assets/training_curve.png",
+      "title": "Training curve"
+    },
+    {
+      "id": "metric_comparison",
+      "filename": "assets/zero_shot_vs_finetuned_metrics.png",
+      "title": "Zero-shot versus fine-tuned metrics"
+    },
+    {
+      "id": "domain_performance",
+      "filename": "assets/domain_token_f1.png",
+      "title": "Domain token F1"
+    },
+    {
+      "id": "token_f1_histogram",
+      "filename": "assets/token_f1_histogram.png",
+      "title": "Token F1 distribution"
+    },
+    {
+      "id": "role_frequency",
+      "filename": "assets/role_frequency_top10.png",
+      "title": "Role frequency in processed train split"
+    },
+    {
+      "id": "pipeline_architecture",
+      "filename": "assets/pipeline_architecture.png",
+      "title": "Pipeline architecture"
+    },
+    {
+      "id": "prompt_evolution",
+      "filename": "assets/prompt_tuning_evolution.png",
+      "title": "Prompt tuning evolution"
+    },
+    {
+      "id": "innovation_comparison",
+      "filename": "assets/innovation_comparison.png",
+      "title": "Innovation comparison"
+    },
+    {
+      "id": "instashap_example",
+      "filename": "assets/instashap_example.png",
+      "title": "InstaShap attribution example"
+    }
+  ],
+  "slide_allocation": {
+    "survey": 8,
+    "implementation": 10,
+    "results_analysis": 7,
+    "innovation_and_prompt_tuning": 4,
+    "final_takeaways": 1,
+    "total": 30
+  }
+}

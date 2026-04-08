@@ -1,0 +1,11 @@
+Build a QA-SRL research system that is realistic on CPU-first hardware but aligned with 2025-2026 research directions.
+
+Requirements:
+1. Use QA-SRL Bank 2.1 as the primary benchmark.
+2. Fine-tune a compact open model that fits on an 8 GB RAM CPU machine.
+3. Predict predicate-level semantic roles and render them as natural-language QA pairs.
+4. Add InstaShap-style token attributions so every predicted role can be inspected.
+5. Report token F1, exact match, role coverage, ROUGE-L, domain-wise F1, plausibility, and faithfulness.
+6. Compare the fine-tuned model against at least one runnable baseline and clearly separate local results from literature claims.
+7. Provide a Streamlit interface that accepts sentence plus predicate and returns QA pairs, structured roles, confidence, and token-level explanations.
+8. Write documentation that explains the implementation, the benchmark setup, the limits of CPU-only training, and the key innovations relative to earlier QA-SRL systems.

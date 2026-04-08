@@ -1,0 +1,16 @@
+torch
+transformers
+peft
+datasets
+huggingface_hub
+streamlit
+shap
+matplotlib
+pandas
+scikit-learn
+sentencepiece
+tqdm
+python-pptx
+reportlab
+Pillow
+PyPDF2
