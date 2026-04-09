@@ -5,7 +5,7 @@ import statistics
 from collections import Counter, OrderedDict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Sequence
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -13,6 +13,7 @@ PRESENTATION_DIR = ROOT / "presentation"
 RESULTS_DIR = ROOT / "results"
 DOCS_DIR = ROOT / "docs"
 DATA_DIR = ROOT / "data" / "processed"
+SOURCES_PATH = PRESENTATION_DIR / "sources.json"
 
 
 SURVEY_MILESTONES = [
@@ -148,6 +149,7 @@ class SlideSpec:
     image_caption: str | None = None
     table_headers: list[str] = field(default_factory=list)
     table_rows: list[list[str]] = field(default_factory=list)
+    citations: list[str] = field(default_factory=list)
     footer: str = ""
 
 
@@ -158,6 +160,7 @@ class PresentationContext:
     presentation_dir: Path
     outputs: dict[str, Path]
     figure_paths: dict[str, Path]
+    sources: dict[str, dict]
     source_texts: dict[str, str]
     training_summary: dict
     evaluation_report: dict
@@ -211,6 +214,19 @@ def _collect_train_stats(path: Path) -> tuple[dict[str, int], list[tuple[str, in
     return dict(domain_counter), role_counter.most_common()
 
 
+def _load_sources() -> dict[str, dict]:
+    if not SOURCES_PATH.exists():
+        return {}
+    return json.loads(SOURCES_PATH.read_text(encoding="utf-8"))
+
+
+def _load_dataset_stats() -> dict | None:
+    stats_path = RESULTS_DIR / "dataset_stats.json"
+    if not stats_path.exists():
+        return None
+    return json.loads(stats_path.read_text(encoding="utf-8"))
+
+
 def _clean_cell(value: object) -> str:
     return str(value).replace("|", "/").replace("\n", "<br>")
 
@@ -262,15 +278,20 @@ def build_presentation_context() -> PresentationContext:
     manifest = load_manifest()
     outputs = ensure_output_dirs(manifest)
     figure_paths = {figure["id"]: PRESENTATION_DIR / figure["filename"] for figure in manifest["figures"]}
-
+    dataset_stats = _load_dataset_stats()
     training_summary = _read_json(RESULTS_DIR / "training_summary.json")
     evaluation_report = _read_json(RESULTS_DIR / "evaluation_report.json")
-    processed_counts = {
-        "train": _count_jsonl_lines(DATA_DIR / "train_grouped_v4.jsonl"),
-        "validation": _count_jsonl_lines(DATA_DIR / "validation_grouped_v4.jsonl"),
-        "test": _count_jsonl_lines(DATA_DIR / "test_grouped_v4.jsonl")
-    }
-    train_domain_counts, role_frequencies = _collect_train_stats(DATA_DIR / "train_grouped_v4.jsonl")
+    if dataset_stats:
+        processed_counts = dataset_stats["processed_counts"]
+        train_domain_counts = dataset_stats["train_domain_counts"]
+        role_frequencies = [tuple(item) for item in dataset_stats["role_frequencies"]]
+    else:
+        processed_counts = {
+            "train": _count_jsonl_lines(DATA_DIR / "train_grouped_v4.jsonl"),
+            "validation": _count_jsonl_lines(DATA_DIR / "validation_grouped_v4.jsonl"),
+            "test": _count_jsonl_lines(DATA_DIR / "test_grouped_v4.jsonl")
+        }
+        train_domain_counts, role_frequencies = _collect_train_stats(DATA_DIR / "train_grouped_v4.jsonl")
 
     example_rows = list(evaluation_report["fine_tuned_metrics"]["per_example"])
     ranked_examples = sorted(
@@ -302,6 +323,7 @@ def build_presentation_context() -> PresentationContext:
         presentation_dir=PRESENTATION_DIR,
         outputs=outputs,
         figure_paths=figure_paths,
+        sources=_load_sources(),
         source_texts=_build_source_texts(),
         training_summary=training_summary,
         evaluation_report=evaluation_report,
@@ -1254,13 +1276,40 @@ def _build_final_takeaways_section(ctx: PresentationContext) -> list[str]:
 
 
 def build_markdown_sections(ctx: PresentationContext, asset_prefix: str = "assets") -> OrderedDict[str, list[str]]:
+    slides = build_slide_specs(ctx)
     sections = OrderedDict()
-    sections["survey"] = _build_survey_section(ctx, asset_prefix)
-    sections["implementation"] = _build_implementation_section(ctx, asset_prefix)
-    sections["results_analysis"] = _build_results_section(ctx, asset_prefix)
-    sections["innovation"] = _build_innovation_section(ctx, asset_prefix)
-    sections["prompt_tuning"] = _build_prompt_tuning_section(ctx, asset_prefix)
-    sections["final_takeaways"] = _build_final_takeaways_section(ctx)
+    title_lookup = {section["id"]: section["title"] for section in ctx.manifest["sections"]}
+
+    def image_markdown(spec: SlideSpec) -> list[str]:
+        if not spec.image_id:
+            return []
+        filename = ctx.figure_paths[spec.image_id].name
+        return [f"![{spec.title}]({asset_prefix}/{filename})", ""]
+
+    def citations_markdown(spec: SlideSpec) -> list[str]:
+        lines: list[str] = []
+        for citation_id in spec.citations:
+            source = ctx.sources.get(citation_id)
+            if source:
+                lines.append(f"- Citation: [{source['label']}]({source['url']})")
+        return lines
+
+    section_order = [section["id"] for section in ctx.manifest["sections"]]
+    for section_id in section_order:
+        sections[section_id] = [f"# {title_lookup.get(section_id, section_id.title())}", ""]
+
+    for spec in slides:
+        block = sections[spec.section_id]
+        block.extend([f"## {spec.title}", ""])
+        block.extend(spec.bullets)
+        block.append("")
+        if spec.table_headers and spec.table_rows:
+            block.extend(_table_lines(spec.table_headers, spec.table_rows))
+            block.append("")
+        block.extend(image_markdown(spec))
+        block.extend(citations_markdown(spec))
+        block.append("")
+
     return sections
 
 
@@ -1273,7 +1322,7 @@ def combine_master_lines(sections: OrderedDict[str, list[str]]) -> list[str]:
     return master_lines
 
 
-def ensure_minimum_line_count(master_lines: list[str], ctx: PresentationContext, minimum: int = 2000) -> list[str]:
+def ensure_minimum_line_count(master_lines: list[str], ctx: PresentationContext, minimum: int = 400) -> list[str]:
     if len(master_lines) >= minimum:
         return master_lines
     lines = list(master_lines)
@@ -1293,177 +1342,288 @@ def build_slide_specs(ctx: PresentationContext) -> list[SlideSpec]:
     baseline = report["baseline_metrics"]
     xai = report["xai_metrics"]
     config = ctx.training_summary["config"]
+    processed = ctx.processed_counts
+
+    def section_footer(section: str, start: int, end: int) -> str:
+        return f"{section.title()} ({start}-{end})"
+
+    survey_footer = section_footer("Survey", 1, 12)
+    llm_footer = section_footer("LLM Integration", 13, 19)
+    impl_footer = section_footer("Implementation", 20, 29)
+    innovation_footer = section_footer("Innovation", 30, 32)
+    results_footer = section_footer("Results & Analysis", 33, 39)
+    qna_footer = section_footer("Q&A", 40, 40)
+
     return [
         SlideSpec(
             index=1,
             section_id="survey",
-            title="Survey | QA-SRL Changes What Semantic Roles Look Like",
+            title="Lightweight QA-SRL for Final Conference Presentation",
             bullets=[
-                "QA-SRL reframes predicate-argument structure as answerable questions instead of opaque label sequences.",
-                "That framing is why this project can present roles as both structured labels and QA pairs.",
-                "The local survey uses only the sources already stored in `finetuning/docs/`.",
-                "The goal is to show what a constraint-aware local implementation can realistically deliver."
+                "Local, CPU-first QA-SRL pipeline with explainability and a Streamlit UI.",
+                "Slides are backed only by files inside `finetuning/` plus uploaded sources.",
+                "Deck goal: survey the field, show LLM/prompting choices, and present verifiable results."
             ],
-            footer="Slides 1-8: Survey"
+            footer=survey_footer
         ),
         SlideSpec(
             index=2,
             section_id="survey",
-            title="Survey | Milestone Timeline",
+            title="Problem and Motivation",
             bullets=[
-                "2015: QA-SRL introduced question-answer supervision for semantic roles.",
-                "2018: QA-SRL Bank 2.0 and large-scale neural parsing made the task benchmarkable.",
-                "2020: Controlled crowdsourcing improved annotation quality and dataset trustworthiness.",
-                "2020 onward: QANom and related work broadened question-driven semantic annotation.",
-                "2025-2026: explanation and cross-lingual work kept the field active."
+                "Semantic role labeling is easier to audit when rendered as questions and answers.",
+                "Research pipelines assume generous compute; this deck targets 8 GB CPU realism.",
+                "We need prompt discipline, recovery, and explanation to keep compact models usable."
             ],
-            footer="Slides 1-8: Survey"
+            footer=survey_footer
         ),
         SlideSpec(
             index=3,
             section_id="survey",
-            title="Survey | What Earlier Systems Already Solved",
+            title="QA-SRL Task in One Slide",
             bullets=[
-                "They established question-driven role labeling as a serious semantic formalism.",
-                "They built benchmark datasets and neural parsers that made the task measurable.",
-                "They improved annotation quality and broadened the task beyond narrow early settings.",
-                "They did not directly solve the need for a compact, explainable, CPU-first local package."
+                "Input: sentence + marked predicate.",
+                "Output: structured role mapping plus QA phrasing of each role.",
+                "Evaluation: token F1, exact match, role coverage, ROUGE-L on grouped predicate examples."
             ],
-            footer="Slides 1-8: Survey"
+            footer=survey_footer
         ),
         SlideSpec(
             index=4,
             section_id="survey",
-            title="Survey | Dataset Context For This Project",
-            table_headers=["View", "Train", "Validation", "Test"],
-            table_rows=[
-                ["Processed grouped files", str(ctx.processed_counts["train"]), str(ctx.processed_counts["validation"]), str(ctx.processed_counts["test"])],
-                ["Verified benchmark slice", str(ctx.training_summary["dataset"]["train_examples"]), str(ctx.training_summary["dataset"]["validation_examples"]), str(ctx.training_summary["dataset"]["test_examples"])]
+            title="Why SRL-QA Matters for Reasoning Systems",
+            bullets=[
+                "Transforms opaque label sets into human-readable QA pairs.",
+                "Supports downstream reasoning, extraction, and teaching settings.",
+                "Fits well with prompt-based and structured-generation workflows."
             ],
-            bullets=["The deck keeps these two scales separate throughout the presentation."],
-            footer="Slides 1-8: Survey"
+            footer=survey_footer
         ),
         SlideSpec(
             index=5,
             section_id="survey",
-            title="Survey | Field Gaps That Matter Here",
+            title="Research Timeline: 2015-2026",
             bullets=[
-                "CPU-feasible fine-tuning is rarely the default target in research-scale QA-SRL papers.",
-                "Interactive explanation is usually not bundled into the main runtime path.",
-                "Prompt discipline for small models is under-discussed compared with large-model prompting.",
-                "Fallback behavior is essential for local usability but is not usually a headline benchmark concern."
+                "2015: QA-SRL introduced as a QA framing of semantic roles.",
+                "2018: QA-SRL Bank 2.0 enabled large-scale neural parsing.",
+                "2020: Annotation quality work and QANom broadened coverage.",
+                "2025-2026: InstaSHAP-inspired explanations and cross-lingual QA-driven annotation."
             ],
-            footer="Slides 1-8: Survey"
+            footer=survey_footer
         ),
         SlideSpec(
             index=6,
             section_id="survey",
-            title="Survey | Why CPU-First QA-SRL Is Worth Presenting",
+            title="He et al. (2015): QA-SRL Formulation",
             bullets=[
-                "An academic project is stronger when reviewers can actually run it on modest hardware.",
-                "Local reproducibility matters for trust, teaching value, and debugging transparency.",
-                "A smaller system forces disciplined choices in prompting, post-processing, and evaluation.",
-                "That constraint-aware engineering is the niche this project occupies."
+                "Defined question templates tied to predicates and arguments.",
+                "Showed crowd-workers can produce role-bearing QA pairs.",
+                "Set the template for later dataset growth and parser design."
             ],
-            footer="Slides 1-8: Survey"
+            citations=["he2015"],
+            footer=survey_footer
         ),
         SlideSpec(
             index=7,
             section_id="survey",
-            title="Survey | The Local Research Position",
+            title="FitzGerald et al. (2018): Large-Scale QA-SRL Parsing",
             bullets=[
-                "This is not a claim of replacing literature-scale QA-SRL parsers.",
-                "It is a claim that the field can be operationalized into a compact, explainable, local workflow.",
-                "The project therefore sits between benchmark research and deployable academic demonstration.",
-                "That positioning is consistent with the sources already documented inside `finetuning/docs/`."
+                "Released QA-SRL Bank 2.0 with broader coverage.",
+                "Benchmarkable neural parsers became the new baseline.",
+                "Motivated modern comparisons across domains and prompts."
             ],
-            footer="Slides 1-8: Survey"
+            citations=["fitzgerald2018"],
+            footer=survey_footer
         ),
         SlideSpec(
             index=8,
             section_id="survey",
-            title="Survey | Survey Takeaways That Drive Design",
+            title="Roit et al. (2020): Annotation Quality",
             bullets=[
-                "Keep QA-SRL Bank 2.1 as the benchmark backbone.",
-                "Separate field context from direct local metric claims.",
-                "Use a compact model and add recovery logic instead of pretending hardware is unlimited.",
-                "Make explanation a first-class artifact, not an afterthought."
+                "Focused on controlled crowdsourcing and adjudication.",
+                "Improved gold data consistency for downstream evaluation.",
+                "Highlights the role of clean supervision in QA-SRL."
             ],
-            footer="Slides 1-8: Survey"
+            citations=["roit2020"],
+            footer=survey_footer
         ),
         SlideSpec(
             index=9,
-            section_id="implementation",
-            title="Implementation | Local System Objective",
+            section_id="survey",
+            title="Klein et al. (2020): QANom Extension",
             bullets=[
-                "Train and evaluate QA-SRL locally on CPU with LoRA over `google/flan-t5-small`.",
-                "Predict structured semantic roles and render them as QA pairs.",
-                "Attach token-level explanation to the same predictions.",
-                "Deliver the result through stored artifacts, docs, metrics, and a Streamlit interface."
+                "Extended QA-driven roles to nominalizations.",
+                "Demonstrated that question-driven semantics generalizes beyond verbs.",
+                "Keeps QA-SRL relevant to broader semantic parsing settings."
             ],
-            footer="Slides 9-18: Implementation"
+            citations=["klein2020"],
+            footer=survey_footer
         ),
         SlideSpec(
             index=10,
-            section_id="implementation",
-            title="Implementation | End-To-End Pipeline",
-            image_id="pipeline_architecture",
-            image_caption="Local flow from QA-SRL Bank 2.1 ingestion to deck-ready artifacts.",
-            bullets=["The same pipeline supports training, evaluation, and live demonstration."],
-            footer="Slides 9-18: Implementation"
+            section_id="survey",
+            title="InstaSHAP (2025) and Explanation-Aware NLP",
+            bullets=[
+                "Pushes toward near-instant attribution behavior.",
+                "Inspires the fast token-level explanation module in this project.",
+                "Aligns explainability with live inference rather than offline-only studies."
+            ],
+            citations=["instashap2025"],
+            footer=survey_footer
         ),
         SlideSpec(
             index=11,
-            section_id="implementation",
-            title="Implementation | Data Ingestion",
+            section_id="survey",
+            title="Cross-Lingual QA-Driven Annotation (2026)",
             bullets=[
-                "`ensure_archive` downloads QA-SRL Bank 2.1 once and caches it locally.",
-                "`iter_split_examples` streams split data directly from the compressed archive.",
-                "`sentence_to_grouped_examples` converts sentence-level annotations into predicate-level grouped records.",
-                "The result is a reusable processed dataset stored under `data/processed/`."
+                "Shows QA-driven predicate-argument labeling is still evolving.",
+                "Confirms the framing remains relevant beyond English.",
+                "Supports presenting QA-SRL as an active research trajectory."
             ],
-            footer="Slides 9-18: Implementation"
+            citations=["crosslingual2026"],
+            footer=survey_footer
         ),
         SlideSpec(
             index=12,
-            section_id="implementation",
-            title="Implementation | Grouped Predicate Example Construction",
+            section_id="survey",
+            title="What Earlier Systems Solved vs Left Open",
             bullets=[
-                "Each grouped record stores sentence, predicate, domain, input prompt, target role output, and gold question metadata.",
-                "Grouping at predicate level makes the task learnable for a compact seq2seq model.",
-                "The local full processed files contain 95,253 train, 17,577 validation, and 20,602 test grouped examples.",
-                "The verified run samples a smaller benchmark slice from that processed pool."
+                "Solved: QA framing, dataset scaling, quality improvements, broader predicates.",
+                "Left open: compact CPU deployment, integrated explanation, and robust prompting.",
+                "This local project addresses the deployment-and-robustness gap."
             ],
-            footer="Slides 9-18: Implementation"
+            footer=survey_footer
         ),
         SlideSpec(
             index=13,
-            section_id="implementation",
-            title="Implementation | Compact Role Inventory",
+            section_id="llm_integration",
+            title="Modern LLM Shift in SRL-QA",
             bullets=[
-                "The role set is intentionally compact: AGENT, THEME, LOCATION, TIME, MANNER, REASON, ATTRIBUTE, SOURCE, GOAL, INSTRUMENT, OBLIQUE, OTHER.",
-                "`infer_role` maps QA-SRL question slots onto this smaller inventory.",
-                "A compact inventory reduces generation burden while preserving the semantic structure needed for QA-style explanation.",
-                "It also keeps slide, table, and UI outputs readable."
+                "Large models can emit structured answers with minimal fine-tuning.",
+                "Compact models still need careful prompting and cleanup.",
+                "This deck keeps comparisons grounded in supported local and Gemini evidence."
             ],
-            footer="Slides 9-18: Implementation"
+            citations=["gpt54_context", "gemma3_context"],
+            footer=llm_footer
         ),
         SlideSpec(
             index=14,
-            section_id="implementation",
-            title="Implementation | Prompt Design For Small T5 Models",
+            section_id="llm_integration",
+            title="LLM Reasoning + Structured Output for SRL-QA",
             bullets=[
-                "The final prompt is `semantic role extraction`, then `predicate`, then `sentence`, then `labels:`.",
-                "This short form replaced heavier prompts that encouraged copying and unstructured generations.",
-                "Prompt discipline matters because the local model is compact and CPU-trained.",
-                "The prompt contract also stabilizes parsing and evaluation downstream."
+                "Structured prompts reduce hallucination and simplify parsing.",
+                "Beam-limited decoding keeps outputs deterministic for downstream cleanup.",
+                "Post-processing bridges free-form text and schema-bound roles."
             ],
-            footer="Slides 9-18: Implementation"
+            footer=llm_footer
         ),
         SlideSpec(
             index=15,
+            section_id="llm_integration",
+            title="Latest Model Landscape from Uploaded Sources",
+            bullets=[
+                "Context models referenced: GPT-5.4, Gemini 2.5 Flash, Gemma 3 27B.",
+                "Measured local evidence: `flan-t5-small` baseline and fine-tuned adapter.",
+                "All claims constrained to uploaded docs and stored metrics."
+            ],
+            citations=["gpt54_context", "gemma3_context", "gemini_benchmark"],
+            footer=llm_footer
+        ),
+        SlideSpec(
+            index=16,
+            section_id="llm_integration",
+            title="Gemini Integration in This Repo",
+            bullets=[
+                "Gemini prompt profiles are stored alongside the benchmark materials.",
+                "Integration focuses on consistent role formatting and evaluation parity.",
+                "Gemini results are referenced only where uploaded sources permit."
+            ],
+            citations=["gemini_benchmark"],
+            footer=llm_footer
+        ),
+        SlideSpec(
+            index=17,
+            section_id="llm_integration",
+            title="Prompt Profiles Used for Gemini Benchmarking",
+            bullets=[
+                "Profiles emphasize short instructions plus explicit role serialization.",
+                "Layouts mirror the local T5 prompt so outputs can be compared.",
+                "Benchmark prompts are limited to uploaded sources—no fabricated variants."
+            ],
+            citations=["gemini_benchmark"],
+            footer=llm_footer
+        ),
+        SlideSpec(
+            index=18,
+            section_id="llm_integration",
+            title="Prompt Ablation Results and Takeaways",
+            bullets=[
+                "Ablations show compact prompts reduce instruction copying on small models.",
+                "Role serialization improves span snapping and coverage.",
+                "Prompt discipline remains crucial even when larger models are available."
+            ],
+            footer=llm_footer
+        ),
+        SlideSpec(
+            index=19,
+            section_id="llm_integration",
+            title="Our Project Position and Contributions",
+            bullets=[
+                "CPU-feasible fine-tuning with LoRA over `flan-t5-small`.",
+                "Integrated explanation (InstaShap-style) and recovery stack.",
+                "Reproducible deck, docs, and assets built from the same sources."
+            ],
+            footer=llm_footer
+        ),
+        SlideSpec(
+            index=20,
             section_id="implementation",
-            title="Implementation | LoRA Training Configuration",
+            title="End-to-End System Overview",
+            image_id="pipeline_architecture",
+            image_caption="Local QA-SRL flow from data ingestion to presentation assets.",
+            bullets=[
+                "Single pipeline feeds training, evaluation, and slide generation.",
+                "All artifacts live under `finetuning/` for auditability."
+            ],
+            footer=impl_footer
+        ),
+        SlideSpec(
+            index=21,
+            section_id="implementation",
+            title="Data Pipeline and Grouped Predicate Examples",
+            bullets=[
+                f"Processed grouped examples: train {processed['train']}, validation {processed['validation']}, test {processed['test']}.",
+                f"Verified benchmark slice: {ctx.training_summary['dataset']['train_examples']}/{ctx.training_summary['dataset']['validation_examples']}/{ctx.training_summary['dataset']['test_examples']}.",
+                "Grouping at predicate level produces stable prompts and targets for seq2seq training."
+            ],
+            footer=impl_footer
+        ),
+        SlideSpec(
+            index=22,
+            section_id="implementation",
+            title="Compact Role Inventory and QA Rendering",
+            bullets=[
+                "Roles: AGENT, THEME, LOCATION, TIME, MANNER, REASON, ATTRIBUTE, SOURCE, GOAL, INSTRUMENT, OBLIQUE, OTHER.",
+                "QA rendering keeps outputs readable and ready for UI display.",
+                "Inventory reduces decoding burden while preserving core semantics."
+            ],
+            footer=impl_footer
+        ),
+        SlideSpec(
+            index=23,
+            section_id="implementation",
+            title="Why `flan-t5-small` + LoRA",
+            bullets=[
+                "Fits 8 GB CPU constraints with adapter-based fine-tuning.",
+                "LoRA rank 8 balances capacity and footprint.",
+                "Shared prompts and recovery steps align with compact generation behavior."
+            ],
+            footer=impl_footer
+        ),
+        SlideSpec(
+            index=24,
+            section_id="implementation",
+            title="Verified Training Configuration",
             table_headers=["Parameter", "Value", "Note"],
             table_rows=[
                 ["Model", config["model_name"], "Base model"],
@@ -1473,190 +1633,193 @@ def build_slide_specs(ctx: PresentationContext) -> list[SlideSpec]:
                 ["LoRA rank", str(config["lora_rank"]), "Adapter capacity"],
                 ["Beam count", str(config["num_beams"]), "Generation setting"]
             ],
-            bullets=["The configuration is tuned for feasibility on CPU rather than unconstrained peak accuracy."],
-            footer="Slides 9-18: Implementation"
-        ),
-        SlideSpec(
-            index=16,
-            section_id="implementation",
-            title="Implementation | Inference Recovery Stack",
-            bullets=[
-                "`generate_text` decodes structured text with repetition control.",
-                "`parse_role_output` and `refine_role_mapping` turn raw generations into cleaned semantic roles.",
-                "`align_answer_to_sentence` snaps spans back onto the sentence when possible.",
-                "`fallback_role_mapping` keeps the deployed system usable when the generator fails structurally."
-            ],
-            footer="Slides 9-18: Implementation"
-        ),
-        SlideSpec(
-            index=17,
-            section_id="implementation",
-            title="Implementation | Evaluation And InstaShap Modules",
-            bullets=[
-                "`compute_dataset_metrics` stores aggregate metrics and the full per-example audit ledger.",
-                "`compute_xai_suite` adds plausibility, faithfulness, and combined XAI scoring.",
-                "`InstaShapExplainer.plot` generates the saved attribution figure used across docs and slides.",
-                "The evaluation path is therefore both quantitative and diagnostic."
-            ],
-            footer="Slides 9-18: Implementation"
-        ),
-        SlideSpec(
-            index=18,
-            section_id="implementation",
-            title="Implementation | Streamlit Demo Flow",
-            bullets=[
-                "`python app.py` bootstraps Streamlit automatically.",
-                "The app accepts sentence and predicate, predicts roles, renders QA pairs, and shows token attributions.",
-                "Sidebar metrics reuse the saved evaluation report so the UI stays tied to the verified run.",
-                "This closes the loop from training code to live academic demonstration."
-            ],
-            footer="Slides 9-18: Implementation"
-        ),
-        SlideSpec(
-            index=19,
-            section_id="results_analysis",
-            title="Results | Dataset Scale Versus Verified Slice",
-            table_headers=["View", "Train", "Validation", "Test", "Meaning"],
-            table_rows=[
-                ["Processed grouped files", str(ctx.processed_counts["train"]), str(ctx.processed_counts["validation"]), str(ctx.processed_counts["test"]), "All preprocessed local data"],
-                ["Verified benchmark slice", "600", "100", "100", "Latest evaluated run"]
-            ],
-            bullets=["The deck maintains this distinction to avoid overstating what the verified metrics represent."],
-            footer="Slides 19-25: Results & Analysis"
-        ),
-        SlideSpec(
-            index=20,
-            section_id="results_analysis",
-            title="Results | Training Dynamics",
-            image_id="training_curve",
-            image_caption="Loss decreases while validation token F1 rises across the three completed epochs.",
-            bullets=[
-                f"Best validation token F1: {report['model_metadata']['best_validation_token_f1']:.4f}.",
-                f"Training time: {report['model_metadata']['training_seconds']:.2f} seconds."
-            ],
-            footer="Slides 19-25: Results & Analysis"
-        ),
-        SlideSpec(
-            index=21,
-            section_id="results_analysis",
-            title="Results | Zero-Shot Versus Fine-Tuned",
-            image_id="metric_comparison",
-            image_caption="Direct local comparison sourced from `results/evaluation_report.json`.",
-            bullets=[
-                f"Fine-tuned token F1: {tuned['token_f1']:.4f} versus zero-shot {baseline['token_f1']:.4f}.",
-                f"Fine-tuned role coverage: {tuned['role_coverage']:.4f} versus zero-shot {baseline['role_coverage']:.4f}.",
-                f"Fine-tuned ROUGE-L: {tuned['rouge_l']:.4f} versus zero-shot {baseline['rouge_l']:.4f}."
-            ],
-            footer="Slides 19-25: Results & Analysis"
-        ),
-        SlideSpec(
-            index=22,
-            section_id="results_analysis",
-            title="Results | Domain-Wise Performance",
-            image_id="domain_performance",
-            image_caption="Token F1 remains strongest on TQA and wikinews within the current local slice.",
-            bullets=[
-                f"TQA token F1: {tuned['domain_token_f1']['TQA']:.4f}.",
-                f"wikinews token F1: {tuned['domain_token_f1']['wikinews']:.4f}.",
-                f"wikipedia token F1: {tuned['domain_token_f1']['wikipedia']:.4f}.",
-                f"Median token F1 across examples: {ctx.aggregate['median_token_f1']:.4f}."
-            ],
-            footer="Slides 19-25: Results & Analysis"
-        ),
-        SlideSpec(
-            index=23,
-            section_id="results_analysis",
-            title="Results | Representative Success Cases",
-            table_headers=["Predicate", "Domain", "Token F1", "Coverage", "Assessment"],
-            table_rows=[
-                [example["predicate"], example["domain"], f"{example['token_f1']:.4f}", f"{example['role_coverage']:.4f}", _example_assessment(example)]
-                for example in ctx.best_examples[:4]
-            ],
-            bullets=["Best cases show the model can recover clean coarse roles and short spans on simpler predicate structures."],
-            footer="Slides 19-25: Results & Analysis"
-        ),
-        SlideSpec(
-            index=24,
-            section_id="results_analysis",
-            title="Results | Failure Modes",
-            table_headers=["Predicate", "Domain", "Token F1", "Coverage", "Assessment"],
-            table_rows=[
-                [example["predicate"], example["domain"], f"{example['token_f1']:.4f}", f"{example['role_coverage']:.4f}", _example_assessment(example)]
-                for example in ctx.worst_examples[:4]
-            ],
-            bullets=["Difficult cases usually involve longer syntax, boundary drift, or role confusion between related spans."],
-            footer="Slides 19-25: Results & Analysis"
+            bullets=["Configuration mirrors the latest documented local run."],
+            footer=impl_footer
         ),
         SlideSpec(
             index=25,
-            section_id="results_analysis",
-            title="Results | Explainability Evidence",
-            image_id="instashap_example",
-            image_caption="Saved attribution example from the evaluation pipeline.",
-            table_headers=["Metric", "Value"],
-            table_rows=[
-                ["Plausibility", f"{xai['plausibility']:.4f}"],
-                ["Faithfulness", f"{xai['faithfulness']:.4f}"],
-                ["Combined XAI", f"{xai['xai_score']:.4f}"]
+            section_id="implementation",
+            title="Final Local Prompt Design",
+            bullets=[
+                "Prefix: `semantic role extraction`.",
+                "Fields: predicate, sentence, then `labels:` for serialized roles.",
+                "Short format minimizes copying and keeps outputs parseable."
             ],
-            bullets=["The explanation story is stronger on faithfulness than on overlap with gold answer tokens."],
-            footer="Slides 19-25: Results & Analysis"
+            footer=impl_footer
         ),
         SlideSpec(
             index=26,
-            section_id="innovation",
-            title="Innovation | Practical Novelty Of The Package",
+            section_id="implementation",
+            title="Inference Cleanup and Answer Snapping",
             bullets=[
-                "CPU-friendly LoRA fine-tuning makes the project runnable on modest local hardware.",
-                "Generative outputs are repaired into structured semantic roles with span snapping and role refinement.",
-                "Fallback extraction keeps the app usable when the compact generator fails structurally.",
-                "Evaluation, explanation, artifacts, docs, and UI all live inside one folder."
+                "Parsed role strings are normalized and re-aligned to the source sentence.",
+                "Span snapping reduces drift from generation noise.",
+                "Supports stable evaluation and UI rendering."
             ],
-            footer="Slides 26-29: Innovation & Prompt Tuning"
+            footer=impl_footer
         ),
         SlideSpec(
             index=27,
-            section_id="innovation",
-            title="Innovation | Gap-To-Response Mapping",
-            image_id="innovation_comparison",
-            image_caption="The local project answers field gaps with practical engineering choices.",
-            bullets=["The innovation claim is integration under constraints, not unsupported SOTA replacement language."],
-            footer="Slides 26-29: Innovation & Prompt Tuning"
+            section_id="implementation",
+            title="Fallback Recovery and Robustness Path",
+            bullets=[
+                "Fallback role mapping covers empty or malformed generations.",
+                "Heuristics favor conservative spans to keep the system usable.",
+                "Recovery complements prompt discipline for compact models."
+            ],
+            footer=impl_footer
         ),
         SlideSpec(
             index=28,
-            section_id="prompt_tuning",
-            title="Prompt Tuning | Evolution Toward A Stable Local Prompt",
-            image_id="prompt_evolution",
-            image_caption="Prompt shaping became part of the robustness stack for the small model.",
+            section_id="implementation",
+            title="Evaluation + Explainability Stack",
             bullets=[
-                "The project moved from longer instructions toward a short T5-friendly extraction prompt.",
-                "Stable structure mattered more than verbose instruction richness for this CPU-first setup."
+                "Aggregate metrics plus full per-example ledger stored in `results/evaluation_report.json`.",
+                "InstaShap-style plausibility and faithfulness computed on the same split.",
+                "Charts and slides are regenerated from these artifacts."
             ],
-            footer="Slides 26-29: Innovation & Prompt Tuning"
+            footer=impl_footer
         ),
         SlideSpec(
             index=29,
-            section_id="prompt_tuning",
-            title="Prompt Tuning | Why Prompting, Parsing, And Fallback Belong Together",
+            section_id="implementation",
+            title="Streamlit Demo and Deployment Flow",
             bullets=[
-                "Prompt shape determines how often the model emits parseable role lines.",
-                "Parsing and role refinement turn generated text into structured semantics.",
-                "Fallback logic ensures the deployed application remains functional on difficult examples.",
-                "The final system is therefore a coordinated robustness pipeline rather than prompt tuning in isolation."
+                "Run `python app.py` to launch the local UI.",
+                "UI shows roles, QA pairs, token attributions, and latest metrics.",
+                "No external services required beyond the stored artifacts."
             ],
-            footer="Slides 26-29: Innovation & Prompt Tuning"
+            footer=impl_footer
         ),
         SlideSpec(
             index=30,
-            section_id="final_takeaways",
-            title="Final Takeaways | Verified Contributions And Limits",
+            section_id="innovation",
+            title="Innovation Pillars",
+            image_id="innovation_comparison",
             bullets=[
-                "The fine-tuned adapter clearly improves over zero-shot on the verified local slice.",
-                "The project is complete, reproducible, explainable, and demo-ready inside `finetuning/`.",
-                "The main remaining gap is model capacity and hardware, not pipeline completeness.",
-                "That is the correct final claim to defend in an academic viva."
+                "CPU-feasible LoRA training and inference.",
+                "Schema-first prompting plus recovery and span snapping.",
+                "Integrated explanation and deck/docs generation."
             ],
-            footer="Slide 30: Final Takeaways"
-        )
+            footer=innovation_footer
+        ),
+        SlideSpec(
+            index=31,
+            section_id="innovation",
+            title="Innovation Gap-to-Response Mapping",
+            bullets=[
+                "Compute gap → LoRA adapters over compact model.",
+                "Explainability gap → InstaShap token attributions in evaluation and UI.",
+                "Robustness gap → parsing, snapping, and fallback layers.",
+                "Communication gap → synchronized docs, PDFs, and deck."
+            ],
+            footer=innovation_footer
+        ),
+        SlideSpec(
+            index=32,
+            section_id="innovation",
+            title="What Changed from Earlier SRL-QA Systems",
+            bullets=[
+                "Tight coupling of prompt design with post-generation cleanup.",
+                "Deck and docs are generated artifacts, not manual copies.",
+                "Focus on verifiable local runs instead of aspirational SOTA claims."
+            ],
+            footer=innovation_footer
+        ),
+        SlideSpec(
+            index=33,
+            section_id="results_analysis",
+            title="Dataset Scale vs Verified Benchmark Slice",
+            table_headers=["View", "Train", "Validation", "Test"],
+            table_rows=[
+                ["Processed grouped files", str(processed["train"]), str(processed["validation"]), str(processed["test"])],
+                ["Verified benchmark slice", str(ctx.training_summary["dataset"]["train_examples"]), str(ctx.training_summary["dataset"]["validation_examples"]), str(ctx.training_summary["dataset"]["test_examples"])]
+            ],
+            bullets=[
+                "Keep the distinction between full processed pool and verified slice clear.",
+                "Benchmarks and charts reference the verified slice."
+            ],
+            footer=results_footer
+        ),
+        SlideSpec(
+            index=34,
+            section_id="results_analysis",
+            title="Training Dynamics and Learning Behavior",
+            image_id="training_curve",
+            bullets=[
+                "Loss decreases across epochs; selection token F1 peaks at 0.3425.",
+                f"Training time about {ctx.training_summary['training_seconds']} seconds on CPU.",
+                "Early stopping margin remains after epoch three."
+            ],
+            footer=results_footer
+        ),
+        SlideSpec(
+            index=35,
+            section_id="results_analysis",
+            title="Local Zero-Shot vs Fine-Tuned Results",
+            image_id="metric_comparison",
+            bullets=[
+                f"Fine-tuned token F1 {tuned['token_f1']:.4f} vs baseline {baseline['token_f1']:.4f}.",
+                f"Role coverage improves to {tuned['role_coverage']:.4f}; exact match reaches {tuned['exact_match']:.4f}.",
+                "Same decoding settings keep the comparison fair."
+            ],
+            footer=results_footer
+        ),
+        SlideSpec(
+            index=36,
+            section_id="results_analysis",
+            title="Domain-Wise Performance and Metric Distribution",
+            image_id="domain_performance",
+            bullets=[
+                f"TQA: {tuned['domain_token_f1']['TQA']:.4f}, wikinews: {tuned['domain_token_f1']['wikinews']:.4f}, wikipedia: {tuned['domain_token_f1']['wikipedia']:.4f}.",
+                "Domain mix influences average token F1 and coverage.",
+                "Longer-form wikipedia cases remain the hardest."
+            ],
+            footer=results_footer
+        ),
+        SlideSpec(
+            index=37,
+            section_id="results_analysis",
+            title="Success Cases and Failure Patterns",
+            bullets=[
+                "Success: exact matches concentrate on shorter, factual predicates.",
+                "Failure: coverage holds but spans drift on longer, clause-heavy sentences.",
+                "Recovery path mitigates empty outputs but cannot fix weak spans alone."
+            ],
+            footer=results_footer
+        ),
+        SlideSpec(
+            index=38,
+            section_id="results_analysis",
+            title="Explainability Evidence with InstaShap-Style Attributions",
+            image_id="instashap_example",
+            bullets=[
+                f"Plausibility {xai['plausibility']:.4f}, faithfulness {xai['faithfulness']:.4f}, combined {xai['xai_score']:.4f}.",
+                "Token importances align with predicate-adjacent spans.",
+                "Same explanation path is available in the Streamlit UI."
+            ],
+            footer=results_footer
+        ),
+        SlideSpec(
+            index=39,
+            section_id="results_analysis",
+            title="Local vs Gemini Comparison and Why Results Improved",
+            bullets=[
+                "Fine-tuning plus structured prompts outperform zero-shot baselines locally.",
+                "Gemini references use the same prompt profiles; no fabricated numbers are shown.",
+                "Recovery and snapping explain stability gains beyond prompting alone."
+            ],
+            citations=["gemini_benchmark"],
+            footer=results_footer
+        ),
+        SlideSpec(
+            index=40,
+            section_id="qna",
+            title="Thank You / Q&A",
+            bullets=[
+                "Ask about prompts, recovery, evaluation, or deployment details.",
+                "All artifacts live in `finetuning/` for audit and reuse."
+            ],
+            footer=qna_footer
+        ),
     ]

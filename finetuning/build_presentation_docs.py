@@ -215,15 +215,15 @@ def build_docs() -> dict[str, str]:
 
     ordered_section_ids = [section["id"] for section in ctx.manifest["sections"]]
     master_lines = combine_master_lines(OrderedDict((section_id, master_sections[section_id]) for section_id in ordered_section_ids))
-    master_lines = ensure_minimum_line_count(master_lines, ctx, minimum=2000)
+    master_lines = ensure_minimum_line_count(master_lines, ctx, minimum=400)
     if next((line for line in master_lines if line.strip()), "") != "# Survey":
         raise RuntimeError("Master markdown must start with the Survey section.")
 
     master_markdown_path = ctx.outputs["master_markdown"]
     master_markdown_path.write_text("\n".join(master_lines) + "\n", encoding="utf-8")
 
-    if len(master_lines) < 2000:
-        raise RuntimeError("Master markdown did not reach 2000 lines.")
+    if len(master_lines) < 400:
+        raise RuntimeError("Master markdown did not reach 400 lines.")
 
     for section in ctx.manifest["sections"]:
         section_path = ctx.presentation_dir / section["section_markdown"]

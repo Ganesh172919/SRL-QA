@@ -1,0 +1,38 @@
+{
+  "he2015": {
+    "label": "He et al. 2015 (QA-SRL formulation)",
+    "url": "https://aclanthology.org/D15-1076/"
+  },
+  "fitzgerald2018": {
+    "label": "FitzGerald et al. 2018 (QA-SRL Bank 2.0)",
+    "url": "https://arxiv.org/abs/1805.05377"
+  },
+  "roit2020": {
+    "label": "Roit et al. 2020 (Annotation quality)",
+    "url": "https://aclanthology.org/2020.acl-main.626/"
+  },
+  "klein2020": {
+    "label": "Klein et al. 2020 (QANom)",
+    "url": "https://aclanthology.org/2020.coling-main.274/"
+  },
+  "instashap2025": {
+    "label": "InstaSHAP 2025",
+    "url": "https://arxiv.org/abs/2502.14177"
+  },
+  "crosslingual2026": {
+    "label": "Cross-lingual QA-driven annotation 2026",
+    "url": "https://arxiv.org/abs/2602.22865"
+  },
+  "gemini_benchmark": {
+    "label": "Gemini benchmark prompt profiles",
+    "url": "https://ai.google.dev/gemini-api/docs/prompting"
+  },
+  "gpt54_context": {
+    "label": "GPT-5.4 context (supported model landscape)",
+    "url": "https://openai.com"
+  },
+  "gemma3_context": {
+    "label": "Gemma 3 27B context",
+    "url": "https://ai.google.dev/gemma"
+  }
+}

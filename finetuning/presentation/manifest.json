@@ -15,14 +15,14 @@
     "no_intro_section": true
   },
   "outputs": {
-    "master_markdown": "MASTER_PROJECT_PRESENTATION.md",
-    "master_pdf": "pdfs/MASTER_PROJECT_PRESENTATION.pdf",
+    "master_markdown": "MASTER_FINAL_PRESENTATION.md",
+    "master_pdf": "pdfs/MASTER_FINAL_PRESENTATION.pdf",
     "assets_dir": "assets",
     "pdfs_dir": "pdfs",
     "deck_dir": "deck",
     "sections_dir": "sections",
-    "slide_deck_pptx": "deck/QA_SRL_Finetuning_Academic_Viva_30_Slides.pptx",
-    "slide_deck_pdf": "deck/QA_SRL_Finetuning_Academic_Viva_30_Slides.pdf"
+    "slide_deck_pptx": "deck/QA_SRL_Final_Conference_40_Slides.pptx",
+    "slide_deck_pdf": "deck/QA_SRL_Final_Conference_40_Slides.pdf"
   },
   "sections": [
     {
@@ -32,57 +32,57 @@
       "section_pdf": "pdfs/01_survey.pdf",
       "slide_range": [
         1,
-        8
+        12
+      ]
+    },
+    {
+      "id": "llm_integration",
+      "title": "LLM Integration",
+      "section_markdown": "sections/02_llm_integration.md",
+      "section_pdf": "pdfs/02_llm_integration.pdf",
+      "slide_range": [
+        13,
+        19
       ]
     },
     {
       "id": "implementation",
       "title": "Implementation",
-      "section_markdown": "sections/02_implementation.md",
-      "section_pdf": "pdfs/02_implementation.pdf",
+      "section_markdown": "sections/03_implementation.md",
+      "section_pdf": "pdfs/03_implementation.pdf",
       "slide_range": [
-        9,
-        18
+        20,
+        29
       ]
     },
     {
       "id": "results_analysis",
       "title": "Results & Analysis",
-      "section_markdown": "sections/03_results_analysis.md",
-      "section_pdf": "pdfs/03_results_analysis.pdf",
+      "section_markdown": "sections/04_results_analysis.md",
+      "section_pdf": "pdfs/04_results_analysis.pdf",
       "slide_range": [
-        19,
-        25
+        33,
+        39
       ]
     },
     {
       "id": "innovation",
       "title": "Innovation",
-      "section_markdown": "sections/04_innovation.md",
-      "section_pdf": "pdfs/04_innovation.pdf",
-      "slide_range": [
-        26,
-        27
-      ]
-    },
-    {
-      "id": "prompt_tuning",
-      "title": "Prompt Tuning",
-      "section_markdown": "sections/05_prompt_tuning.md",
-      "section_pdf": "pdfs/05_prompt_tuning.pdf",
-      "slide_range": [
-        28,
-        29
-      ]
-    },
-    {
-      "id": "final_takeaways",
-      "title": "Final Takeaways",
-      "section_markdown": "sections/06_final_takeaways.md",
-      "section_pdf": "pdfs/06_final_takeaways.pdf",
+      "section_markdown": "sections/05_innovation.md",
+      "section_pdf": "pdfs/05_innovation.pdf",
       "slide_range": [
         30,
-        30
+        32
+      ]
+    },
+    {
+      "id": "qna",
+      "title": "Q&A",
+      "section_markdown": "sections/06_qna.md",
+      "section_pdf": "pdfs/06_qna.pdf",
+      "slide_range": [
+        40,
+        40
       ]
     }
   ],
@@ -134,11 +134,12 @@
     }
   ],
   "slide_allocation": {
-    "survey": 8,
+    "survey": 12,
+    "llm_integration": 7,
     "implementation": 10,
+    "innovation": 3,
     "results_analysis": 7,
-    "innovation_and_prompt_tuning": 4,
-    "final_takeaways": 1,
-    "total": 30
+    "qna": 1,
+    "total": 40
   }
 }
