@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import statistics
 from collections import Counter, OrderedDict
 from dataclasses import dataclass, field
@@ -9,7 +10,7 @@ from typing import Iterable
 
 
 ROOT = Path(__file__).resolve().parent.parent
-PRESENTATION_DIR = ROOT / "presentation_final"
+PRESENTATION_DIR = ROOT / os.getenv("QA_SRL_PRESENTATION_DIR", "presentation_final")
 RESULTS_DIR = ROOT / "results"
 DOCS_DIR = ROOT / "docs"
 DATA_DIR = ROOT / "data" / "processed"
