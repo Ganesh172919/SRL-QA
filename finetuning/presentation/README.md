@@ -1,25 +1,19 @@
-# Presentation Package
+# Presentation Package (Legacy Path)
 
-This folder contains the generated presentation package for the CPU-first QA-SRL fine-tuning project.
+This folder now mirrors the final manifest/source inventory, while generated outputs are written to `presentation_final/`.
 
 ## Build commands
 
-- `python build_presentation_assets.py`
+- `python build_final_presentation_assets.py`
 - `python build_presentation_docs.py`
 - `python build_presentation_deck.py`
 
 ## Main outputs
 
-- `MASTER_PROJECT_PRESENTATION.md`
-- `pdfs/MASTER_PROJECT_PRESENTATION.pdf`
-- `pdfs/01_survey.pdf`
-- `pdfs/02_implementation.pdf`
-- `pdfs/03_results_analysis.pdf`
-- `pdfs/04_innovation.pdf`
-- `pdfs/05_prompt_tuning.pdf`
-- `pdfs/06_final_takeaways.pdf`
-- `deck/QA_SRL_Finetuning_Academic_Viva_30_Slides.pptx`
-- `deck/QA_SRL_Finetuning_Academic_Viva_30_Slides.pdf`
+- `../presentation_final/MASTER_FINAL_PRESENTATION.md`
+- `../presentation_final/pdfs/MASTER_FINAL_PRESENTATION.pdf`
+- `../presentation_final/deck/QA_SRL_Final_Conference_40_Slides.pptx`
+- `../presentation_final/deck/QA_SRL_Final_Conference_40_Slides.pdf`
 
 ## Supporting content
 

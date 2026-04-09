@@ -1,0 +1,38 @@
+{
+  "he_2015": {
+    "label": "He et al. (2015) - QA-SRL Formulation",
+    "url": "https://aclanthology.org/D15-1076/"
+  },
+  "fitzgerald_2018": {
+    "label": "FitzGerald et al. (2018) - Large-Scale QA-SRL Parsing",
+    "url": "https://arxiv.org/abs/1805.05377"
+  },
+  "roit_2020": {
+    "label": "Roit et al. (2020) - Annotation Quality",
+    "url": "https://aclanthology.org/2020.acl-main.626/"
+  },
+  "klein_2020": {
+    "label": "Klein et al. (2020) - QANom",
+    "url": "https://aclanthology.org/2020.coling-main.274/"
+  },
+  "instashap_2025": {
+    "label": "InstaSHAP (2025)",
+    "url": "https://arxiv.org/abs/2502.14177"
+  },
+  "crosslingual_2026": {
+    "label": "Cross-Lingual QA-Driven Annotation (2026)",
+    "url": "https://arxiv.org/abs/2602.22865"
+  },
+  "gpt_5_4": {
+    "label": "GPT-5.4 context reference",
+    "url": "https://openai.com/"
+  },
+  "gemini_2_5_flash": {
+    "label": "Gemini 2.5 Flash context reference",
+    "url": "https://ai.google.dev/"
+  },
+  "gemma_3_27b": {
+    "label": "Gemma 3 27B context reference",
+    "url": "https://ai.google.dev/gemma"
+  }
+}

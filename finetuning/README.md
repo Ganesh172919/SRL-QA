@@ -35,22 +35,22 @@ python app.py
 
 ## Presentation package
 
-The folder now includes a self-contained presentation build pipeline under `presentation/`.
+The folder now includes a self-contained presentation build pipeline under `presentation_final/`.
 
 Build commands:
 
 ```powershell
-python build_presentation_assets.py
+python build_final_presentation_assets.py
 python build_presentation_docs.py
 python build_presentation_deck.py
 ```
 
 Main generated outputs:
 
-- `presentation/MASTER_PROJECT_PRESENTATION.md`
-- `presentation/pdfs/MASTER_PROJECT_PRESENTATION.pdf`
-- `presentation/deck/QA_SRL_Finetuning_Academic_Viva_30_Slides.pptx`
-- `presentation/deck/QA_SRL_Finetuning_Academic_Viva_30_Slides.pdf`
+- `presentation_final/MASTER_FINAL_PRESENTATION.md`
+- `presentation_final/pdfs/MASTER_FINAL_PRESENTATION.pdf`
+- `presentation_final/deck/QA_SRL_Final_Conference_40_Slides.pptx`
+- `presentation_final/deck/QA_SRL_Final_Conference_40_Slides.pdf`
 
 The master markdown starts with the Survey section, contains more than 2000 lines, and is backed only by material inside `finetuning/`.
 

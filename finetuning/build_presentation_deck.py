@@ -44,11 +44,11 @@ PDF_COLORS = {
 def _section_color(section_id: str):
     mapping = {
         "survey": RGB["navy"],
+        "llm_integration": RGB["teal"],
         "implementation": RGB["teal"],
         "results_analysis": RGB["gold"],
         "innovation": RGB["slate"],
-        "prompt_tuning": RGB["teal"],
-        "final_takeaways": RGB["navy"],
+        "qna": RGB["navy"],
     }
     return mapping.get(section_id, RGB["navy"])
 
@@ -56,11 +56,11 @@ def _section_color(section_id: str):
 def _pdf_section_color(section_id: str):
     mapping = {
         "survey": PDF_COLORS["navy"],
+        "llm_integration": PDF_COLORS["teal"],
         "implementation": PDF_COLORS["teal"],
         "results_analysis": PDF_COLORS["gold"],
         "innovation": PDF_COLORS["slate"],
-        "prompt_tuning": PDF_COLORS["teal"],
-        "final_takeaways": PDF_COLORS["navy"],
+        "qna": PDF_COLORS["navy"],
     }
     return mapping.get(section_id, PDF_COLORS["navy"])
 
@@ -128,6 +128,35 @@ def _add_footer(slide, text: str, slide_number: int) -> None:
     number_paragraph.alignment = PP_ALIGN.RIGHT
 
 
+def _add_source_links(slide, source_inventory: dict[str, dict[str, str]], source_keys: list[str]) -> None:
+    if not source_keys:
+        return
+    box = slide.shapes.add_textbox(Inches(0.95), Inches(6.62), Inches(10.8), Inches(0.34))
+    frame = box.text_frame
+    frame.clear()
+    paragraph = frame.paragraphs[0]
+    paragraph.font.name = "Aptos"
+    paragraph.font.size = Pt(9)
+    paragraph.font.color.rgb = RGB["slate"]
+
+    first = True
+    for key in source_keys:
+        source = source_inventory.get(key, {})
+        label = source.get("label", key)
+        url = source.get("url", "")
+        if not first:
+            separator = paragraph.add_run()
+            separator.text = " | "
+        run = paragraph.add_run()
+        run.text = label
+        run.font.name = "Aptos"
+        run.font.size = Pt(9)
+        run.font.color.rgb = RGB["teal"]
+        if url:
+            run.hyperlink.address = url
+        first = False
+
+
 def _add_bullets(slide, bullets: list[str], left: float, top: float, width: float, height: float) -> None:
     textbox = slide.shapes.add_textbox(Inches(left), Inches(top), Inches(width), Inches(height))
     frame = textbox.text_frame
@@ -183,11 +212,12 @@ def _add_table(slide, headers: list[str], rows: list[list[str]], left: float, to
             paragraph.font.color.rgb = RGB["ink"]
 
 
-def _render_slide(prs: Presentation, spec, figure_paths: dict[str, Path]) -> None:
+def _render_slide(prs: Presentation, spec, figure_paths: dict[str, Path], source_inventory: dict[str, dict[str, str]]) -> None:
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     _add_background(slide, spec.section_id)
     _add_title(slide, spec.title, spec.section_id)
     _add_footer(slide, spec.footer, spec.index)
+    _add_source_links(slide, source_inventory, spec.source_keys)
 
     has_image = spec.image_id is not None
     has_table = bool(spec.table_headers and spec.table_rows)
@@ -247,7 +277,7 @@ def _draw_paragraph(pdf: canvas.Canvas, text: str, style, x: float, y: float, wi
     return wrapped_height
 
 
-def _draw_pdf_slide(pdf: canvas.Canvas, spec, figure_paths: dict[str, Path], styles) -> None:
+def _draw_pdf_slide(pdf: canvas.Canvas, spec, figure_paths: dict[str, Path], styles, source_inventory: dict[str, dict[str, str]]) -> None:
     width = 13.333 * inch
     height = 7.5 * inch
     pdf.setFillColor(PDF_COLORS["cream"])
@@ -330,7 +360,16 @@ def _draw_pdf_slide(pdf: canvas.Canvas, spec, figure_paths: dict[str, Path], sty
     if spec.image_caption:
         _draw_paragraph(pdf, spec.image_caption, styles["SlideFooter"], 5.5 * inch if has_image else 0.9 * inch, 1.55 * inch, 6.7 * inch)
 
-    _draw_paragraph(pdf, spec.footer, styles["SlideFooter"], 0.7 * inch, 0.38 * inch, 6.0 * inch)
+    if spec.source_keys:
+        source_parts = []
+        for key in spec.source_keys:
+            source = source_inventory.get(key, {})
+            label = source.get("label", key)
+            url = source.get("url", "")
+            source_parts.append(f"{label}: {url}" if url else label)
+        _draw_paragraph(pdf, " | ".join(source_parts), styles["SlideFooter"], 0.7 * inch, 0.6 * inch, 12.0 * inch)
+
+    _draw_paragraph(pdf, spec.footer, styles["SlideFooter"], 0.7 * inch, 0.38 * inch, 8.0 * inch)
     pdf.setFont("Helvetica-Bold", 9)
     pdf.setFillColor(PDF_COLORS["navy"])
     pdf.drawRightString(width - 0.5 * inch, 0.38 * inch, str(spec.index))
@@ -340,20 +379,20 @@ def build_deck() -> dict[str, str]:
     generate_assets()
     ctx = build_presentation_context()
     slide_specs = build_slide_specs(ctx)
-    if len(slide_specs) != 30:
-        raise RuntimeError(f"Expected 30 slides, found {len(slide_specs)}.")
+    if len(slide_specs) != 40:
+        raise RuntimeError(f"Expected 40 slides, found {len(slide_specs)}.")
 
     prs = Presentation()
     prs.slide_width = SLIDE_WIDTH
     prs.slide_height = SLIDE_HEIGHT
     for spec in slide_specs:
-        _render_slide(prs, spec, ctx.figure_paths)
+        _render_slide(prs, spec, ctx.figure_paths, ctx.source_inventory)
     prs.save(ctx.outputs["slide_deck_pptx"])
 
     pdf = canvas.Canvas(str(ctx.outputs["slide_deck_pdf"]), pagesize=(13.333 * inch, 7.5 * inch))
     styles = _pdf_styles()
     for spec in slide_specs:
-        _draw_pdf_slide(pdf, spec, ctx.figure_paths, styles)
+        _draw_pdf_slide(pdf, spec, ctx.figure_paths, styles, ctx.source_inventory)
         pdf.showPage()
     pdf.save()
 
